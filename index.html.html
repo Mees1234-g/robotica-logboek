@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robotica Logboek — Ontwerpen 4</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0b1121;--bg2:#0f172a;--card:#1e293b;--border:#334155;--border2:#1e3a5f;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;--blue:#3b82f6;--blue2:#60a5fa;--blue3:#2563eb;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;--font:'DM Sans',sans-serif;--mono:'JetBrains Mono',monospace}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+.header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:linear-gradient(135deg,var(--bg2),var(--card));border-bottom:1px solid var(--border2);flex-wrap:wrap;gap:12px}
+.header-left{display:flex;align-items:center;gap:12px}
+.logo{font-size:28px;background:var(--border2);border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+.header h1{font-size:18px;font-family:var(--mono);font-weight:700}
+.header p{font-size:12px;color:var(--text3)}
+.header-actions{display:flex;gap:8px;flex-wrap:wrap}
+.header-btn{background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:8px;padding:6px 14px;cursor:pointer;font-size:13px;font-family:var(--font);transition:all .2s}
+.header-btn:hover{border-color:var(--blue);color:var(--blue2)}
+.sync-status{display:flex;align-items:center;gap:6px;font-size:12px;font-family:var(--mono)}
+.sync-dot{width:8px;height:8px;border-radius:50%;animation:pulse 2s infinite}
+.sync-ok .sync-dot{background:var(--green)}
+.sync-ok{color:var(--green)}
+.sync-err .sync-dot{background:var(--red)}
+.sync-err{color:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.toast{background:var(--green);color:#fff;text-align:center;padding:10px 20px;font-size:14px;font-weight:500;display:none}
+.toast.show{display:block}
+.tab-bar{display:flex;gap:4px;padding:12px 24px;background:var(--bg2);overflow-x:auto;border-bottom:1px solid var(--card)}
+.tab{background:transparent;border:none;color:var(--text3);padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-family:var(--font);white-space:nowrap;transition:all .2s;display:flex;align-items:center;gap:6px}
+.tab:hover{color:var(--text2);background:rgba(255,255,255,.05)}
+.tab.active{background:var(--border2);color:var(--blue2);font-weight:600}
+.badge{background:var(--blue);color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700}
+.content{padding:24px;max-width:1100px;margin:0 auto}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:28px}
+.stat-card{background:linear-gradient(135deg,var(--card),var(--bg2));border:1px solid var(--border2);border-radius:12px;padding:20px;text-align:center}
+.stat-number{font-size:28px;font-weight:700;font-family:var(--mono)}
+.stat-label{font-size:12px;color:var(--text3);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+.section-title{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:16px;margin-top:8px;text-transform:uppercase;letter-spacing:1px;font-family:var(--mono)}
+.member-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:28px}
+.member-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;cursor:pointer;transition:all .2s}
+.member-card:hover{border-color:var(--blue);transform:translateY(-1px)}
+.member-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.member-name{font-weight:600;font-size:15px}
+.member-hours{font-size:13px;color:var(--blue);font-family:var(--mono);font-weight:600}
+.progress-bg{height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:3px;transition:width .5s ease}
+.member-card-footer{display:flex;justify-content:space-between;font-size:12px;color:var(--text3)}
+.cat-tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.cat-tag{background:var(--bg2);padding:3px 8px;border-radius:6px;font-size:11px;color:var(--text2)}
+.timeline-item{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--card)}
+.timeline-dot{width:8px;height:8px;border-radius:50%;background:var(--blue);margin-top:6px;flex-shrink:0}
+.timeline-header{display:flex;gap:10px;align-items:center;margin-bottom:4px;flex-wrap:wrap}
+.timeline-member{font-weight:600;font-size:14px;color:var(--blue2)}
+.timeline-date{font-size:12px;color:var(--text3);font-family:var(--mono)}
+.timeline-desc{font-size:14px;color:#cbd5e1}
+.timeline-hours{font-size:12px;color:var(--text3);margin-top:2px}
+.status-badge{padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600}
+.status-Gepland{background:rgba(245,158,11,.15);color:var(--yellow)}
+.status-Bezig{background:rgba(59,130,246,.15);color:var(--blue)}
+.status-Afgerond{background:rgba(16,185,129,.15);color:var(--green)}
+.status-Geblokkeerd{background:rgba(239,68,68,.15);color:var(--red)}
+.member-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.member-title{font-size:22px;font-weight:700}
+.member-meta{color:var(--text3);font-size:14px;margin-top:4px}
+.add-btn{background:linear-gradient(135deg,var(--blue),var(--blue3));color:#fff;border:none;padding:10px 20px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;font-family:var(--font);transition:all .2s}
+.add-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(59,130,246,.3)}
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:24px;animation:slideDown .2s ease}
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.form-title{margin:0 0 20px;font-size:17px;font-weight:600}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:14px}
+.form-group{margin-bottom:14px}
+.label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.input,.select-input{width:100%;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;font-family:var(--font);outline:none;transition:border .2s}
+.input:focus,.select-input:focus{border-color:var(--blue)}
+textarea.input{resize:vertical}
+.code-input{font-family:var(--mono);font-size:13px;background:var(--bg);color:#a5f3fc}
+.submit-btn{background:linear-gradient(135deg,var(--green),#059669);color:#fff;border:none;padding:12px 28px;border-radius:10px;cursor:pointer;font-size:15px;font-weight:600;width:100%;font-family:var(--font);transition:all .2s}
+.submit-btn:hover{transform:translateY(-1px)}
+.photo-area{border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;cursor:pointer;color:var(--text3);font-size:13px}
+.photo-area:hover{border-color:var(--blue)}
+.photo-previews{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.photo-preview{position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.photo-preview img{width:100%;height:100%;object-fit:cover}
+.photo-remove{position:absolute;top:2px;right:2px;background:var(--red);color:#fff;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:11px}
+.entry-card{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.entry-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;cursor:pointer;gap:12px}
+.entry-header:hover{background:rgba(255,255,255,.02)}
+.entry-left{display:flex;align-items:flex-start;gap:12px;flex:1;min-width:0}
+.entry-icon{font-size:22px;flex-shrink:0}
+.entry-title{font-size:14px;font-weight:500;word-break:break-word}
+.entry-meta{font-size:12px;color:var(--text3);margin-top:3px;font-family:var(--mono)}
+.entry-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.entry-body{padding:0 18px 18px;border-top:1px solid var(--bg2);display:none}
+.entry-body.open{display:block}
+.entry-notes{font-size:14px;color:var(--text2);margin-top:14px;line-height:1.5}
+.code-block{margin-top:14px;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.code-block-header{background:var(--border);padding:6px 14px;font-size:12px;font-weight:600;color:var(--text2);font-family:var(--mono)}
+.code-pre{background:var(--bg);padding:14px;margin:0;font-size:13px;font-family:var(--mono);color:#a5f3fc;overflow-x:auto;white-space:pre-wrap;line-height:1.5}
+.entry-photos{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.entry-photos img{max-width:250px;max-height:200px;border-radius:8px;border:1px solid var(--border)}
+.delete-btn{background:transparent;border:1px solid var(--red);color:var(--red);padding:6px 16px;border-radius:8px;cursor:pointer;font-size:13px;margin-top:14px;font-family:var(--font)}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text3)}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:440px;width:100%}
+.modal h3{margin:0 0 8px;font-size:18px}
+.modal .subtitle{margin:0 0 16px;font-size:13px;color:var(--text3)}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+.cancel-btn{background:transparent;border:1px solid var(--border);color:var(--text2);padding:8px 18px;border-radius:8px;cursor:pointer;font-size:14px;font-family:var(--font)}
+.save-btn{background:var(--blue);color:#fff;border:none;padding:8px 22px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;font-family:var(--font)}
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">⚙️</div>
+    <div><h1>Robotica Logboek</h1><p>Ontwerpen 4 — Werkzaamheden Tracker</p></div>
+  </div>
+  <div class="sync-status sync-err" id="syncStatus"><div class="sync-dot"></div><span id="syncText">Verbinden...</span></div>
+  <div class="header-actions">
+    <button class="header-btn" onclick="openNameEditor()">✏️ Namen</button>
+    <button class="header-btn" onclick="exportExcel()">📥 Export Excel</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="tab-bar" id="tabBar"></div>
+<div class="content" id="content"></div>
+<div class="modal-overlay hidden" id="nameModal" onclick="closeNameEditor()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3>Teamleden aanpassen</h3>
+    <p class="subtitle">Eén naam per regel. Bestaande entries worden gekoppeld aan de nieuwe namen.</p>
+    <textarea class="input" id="nameInput" rows="8" style="min-height:160px"></textarea>
+    <div class="modal-actions">
+      <button class="cancel-btn" onclick="closeNameEditor()">Annuleren</button>
+      <button class="save-btn" onclick="saveNames()">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var DB = "https://robotica-logboek-default-rtdb.europe-west1.firebasedatabase.app";
+var CATS = {"Onderzoek":"🔍","Hardware ontwerp":"🔧","Software ontwerp":"💻","Solderen/bouwen":"⚡","Programmeren":"🖥️","Testen & debuggen":"🐛","Documentatie":"📄","Vergadering":"👥","Presentatie":"📊","Overig":"📌"};
+var CATLIST = Object.keys(CATS);
+var STATLIST = ["Gepland","Bezig","Afgerond","Geblokkeerd"];
+var DEFM = ["Teamlid 1","Teamlid 2","Teamlid 3","Teamlid 4","Teamlid 5","Teamlid 6","Teamlid 7"];
+var members = DEFM.slice(), entries = {}, activeTab = "overzicht", pendingPhotos = [];
+
+function esc(s){var d=document.createElement("div");d.textContent=s||"";return d.innerHTML}
+function toast(m){var t=document.getElementById("toast");t.textContent=m;t.classList.add("show");setTimeout(function(){t.classList.remove("show")},4000)}
+function sync(ok){var e=document.getElementById("syncStatus");e.className="sync-status "+(ok?"sync-ok":"sync-err");document.getElementById("syncText").textContent=ok?"Live verbonden":"Offline"}
+
+function dbGet(){
+  var x=new XMLHttpRequest();
+  x.open("GET",DB+"/.json",true);
+  x.timeout=5000;
+  x.onload=function(){
+    if(x.status===200){
+      try{
+        var d=JSON.parse(x.responseText);
+        if(d){members=d.members||DEFM.slice();entries=d.entries||{}}
+        sync(true);renderTabs();renderContent();
+      }catch(e){sync(false)}
+    }else{sync(false)}
+  };
+  x.onerror=function(){sync(false)};
+  x.ontimeout=function(){sync(false)};
+  x.send();
+}
+
+function dbPut(){
+  var x=new XMLHttpRequest();
+  x.open("PUT",DB+"/.json",true);
+  x.setRequestHeader("Content-Type","application/json");
+  x.timeout=5000;
+  x.onload=function(){
+    if(x.status===200){
+      sync(true);
+      document.getElementById("syncText").textContent="Opgeslagen ✓";
+      setTimeout(function(){document.getElementById("syncText").textContent="Live verbonden"},2000);
+    }else{sync(false)}
+  };
+  x.onerror=function(){sync(false)};
+  x.ontimeout=function(){sync(false)};
+  x.send(JSON.stringify({members:members,entries:entries}));
+}
+
+setInterval(function(){var p=JSON.stringify({m:members,e:entries});dbGet()},15000);
+
+function stats(m){var it=entries[m]||[],h=0,done=0,ch={};for(var i=0;i<it.length;i++){h+=parseFloat(it[i].hours)||0;if(it[i].status==="Afgerond")done++;var c=it[i].category;ch[c]=(ch[c]||0)+(parseFloat(it[i].hours)||0)}return{n:it.length,h:h,done:done,ch:ch}}
+function tab(t){activeTab=t;renderTabs();renderContent()}
+
+function renderTabs(){
+  var h='<button class="tab '+(activeTab==="overzicht"?"active":"")+'" onclick="tab(\'overzicht\')">📊 Overzicht</button>';
+  for(var i=0;i<members.length;i++){var m=members[i],c=(entries[m]||[]).length;h+='<button class="tab '+(activeTab===m?"active":"")+'" onclick="tab(\''+m.replace(/'/g,"\\'")+"')\">"+esc(m)+(c?' <span class="badge">'+c+"</span>":"")+"</button>"}
+  document.getElementById("tabBar").innerHTML=h;
+}
+
+function renderContent(){if(activeTab==="overzicht")renderOv();else renderMem(activeTab)}
+
+function renderOv(){
+  var all=[],th=0,dn=0;
+  for(var i=0;i<members.length;i++){var it=entries[members[i]]||[];for(var j=0;j<it.length;j++){all.push(Object.assign({},it[j],{member:members[i]}));th+=parseFloat(it[j].hours)||0;if(it[j].status==="Afgerond")dn++}}
+  var h='<div class="stats-row"><div class="stat-card"><div class="stat-number">'+all.length+'</div><div class="stat-label">Totaal taken</div></div><div class="stat-card"><div class="stat-number" style="color:var(--green)">'+dn+'</div><div class="stat-label">Afgerond</div></div><div class="stat-card"><div class="stat-number" style="color:var(--blue)">'+th.toFixed(1)+'</div><div class="stat-label">Totaal uren</div></div><div class="stat-card"><div class="stat-number" style="color:var(--yellow)">'+members.length+'</div><div class="stat-label">Teamleden</div></div></div><div class="section-title">Voortgang per teamlid</div><div class="member-grid">';
+  for(var i=0;i<members.length;i++){var m=members[i],s=stats(m),p=s.n>0?Math.round(s.done/s.n*100):0,tg="",ce=Object.entries(s.ch).slice(0,3);for(var k=0;k<ce.length;k++)tg+='<span class="cat-tag">'+(CATS[ce[k][0]]||"")+" "+ce[k][1].toFixed(1)+"u</span>";h+='<div class="member-card" onclick="tab(\''+m.replace(/'/g,"\\'")+"')\"><div class=\"member-card-header\"><span class=\"member-name\">"+esc(m)+"</span><span class=\"member-hours\">"+s.h.toFixed(1)+' uur</span></div><div class="progress-bg"><div class="progress-fill" style="width:'+p+'%"></div></div><div class="member-card-footer"><span>'+s.done+"/"+s.n+' afgerond</span><span style="color:var(--green);font-weight:600">'+p+"%</span></div>"+(tg?'<div class="cat-tags">'+tg+"</div>":"")+"</div>"}
+  h+="</div>";
+  if(all.length>0){all.sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt)});h+='<div class="section-title">Recente activiteit</div><div>';for(var i=0;i<Math.min(all.length,10);i++){var e=all[i];h+='<div class="timeline-item"><div class="timeline-dot"></div><div><div class="timeline-header"><span class="timeline-member">'+esc(e.member)+'</span><span class="timeline-date">'+e.date+'</span><span class="status-badge status-'+e.status+'">'+e.status+'</span></div><div class="timeline-desc">'+(CATS[e.category]||"")+" "+esc(e.description)+"</div>"+(e.hours?'<div class="timeline-hours">'+e.hours+" uur</div>":"")+"</div></div>"}h+="</div>"}
+  document.getElementById("content").innerHTML=h;
+}
+
+function renderMem(m){
+  var it=entries[m]||[],th=0;for(var i=0;i<it.length;i++)th+=parseFloat(it[i].hours)||0;
+  var td=new Date().toISOString().split("T")[0],ms=m.replace(/'/g,"\\'"),co="",so="";
+  for(var i=0;i<CATLIST.length;i++)co+="<option>"+CATLIST[i]+"</option>";
+  for(var i=0;i<STATLIST.length;i++)so+="<option"+(STATLIST[i]==="Bezig"?" selected":"")+">"+STATLIST[i]+"</option>";
+  var h='<div class="member-header"><div><div class="member-title">'+esc(m)+'</div><div class="member-meta">'+it.length+" activiteiten · "+th.toFixed(1)+' uur totaal</div></div><button class="add-btn" onclick="toggleForm()">+ Activiteit toevoegen</button></div><div class="form-card hidden" id="addForm"><div class="form-title">Nieuwe activiteit</div><div class="form-grid"><div class="form-group"><label class="label">Datum</label><input type="date" class="input" id="fDate" value="'+td+'"></div><div class="form-group"><label class="label">Categorie</label><select class="input" id="fCat">'+co+'</select></div><div class="form-group"><label class="label">Uren</label><input type="number" step="0.5" min="0" class="input" id="fHours" placeholder="bijv. 2.5"></div><div class="form-group"><label class="label">Status</label><select class="input" id="fStatus">'+so+'</select></div></div><div class="form-group"><label class="label">Omschrijving *</label><textarea class="input" id="fDesc" rows="3" placeholder="Beschrijf wat je hebt gedaan..."></textarea></div><div class="form-group"><label class="label">Code (optioneel)</label><textarea class="input code-input" id="fCode" rows="4" placeholder="Plak hier je code..."></textarea></div><div class="form-group"><label class="label">Opmerkingen (optioneel)</label><textarea class="input" id="fNotes" rows="2" placeholder="Extra info, links..."></textarea></div><div class="form-group"><label class="label">Foto\'s (optioneel)</label><div class="photo-area" onclick="document.getElementById(\'fPhotos\').click()">📷 Klik om foto\'s toe te voegen<input type="file" id="fPhotos" accept="image/*" multiple onchange="handlePhotos(event)" style="display:none"></div><div class="photo-previews" id="photoPreviews"></div></div><button class="submit-btn" onclick="submitEntry(\''+ms+'\')">Opslaan</button></div>';
+  if(!it.length)h+='<div class="empty-state"><div style="font-size:48px">📋</div><p>Nog geen activiteiten.<br>Klik op "+ Activiteit toevoegen".</p></div>';
+  var sr=it.slice().sort(function(a,b){return new Date(b.date)-new Date(a.date)});
+  for(var i=0;i<sr.length;i++){var e=sr[i],ph="";if(e.photos)for(var p=0;p<e.photos.length;p++)ph+='<img src="'+e.photos[p].data+'" alt="foto">';h+='<div class="entry-card"><div class="entry-header" onclick="togE('+e.id+')"><div class="entry-left"><span class="entry-icon">'+(CATS[e.category]||"📌")+"</span><div><div class=\"entry-title\">"+esc(e.description)+'</div><div class="entry-meta">'+e.date+" · "+e.category+" · "+(e.hours||0)+' uur</div></div></div><div class="entry-right"><span class="status-badge status-'+e.status+'">'+e.status+'</span><span id="ar-'+e.id+'">▼</span></div></div><div class="entry-body" id="bo-'+e.id+'">'+(e.notes?'<div class="entry-notes"><strong>Opmerkingen:</strong> '+esc(e.notes)+"</div>":"")+(e.code?'<div class="code-block"><div class="code-block-header">Code</div><pre class="code-pre">'+esc(e.code)+"</pre></div>":"")+(ph?'<div class="entry-photos">'+ph+"</div>":"")+'<button class="delete-btn" onclick="delE(\''+ms+"',"+e.id+')">🗑️ Verwijderen</button></div></div>'}
+  document.getElementById("content").innerHTML=h;
+}
+
+function toggleForm(){document.getElementById("addForm").classList.toggle("hidden");pendingPhotos=[]}
+function handlePhotos(ev){for(var i=0;i<ev.target.files.length;i++){(function(f){var r=new FileReader();r.onload=function(e){pendingPhotos.push({name:f.name,data:e.target.result});rpv()};r.readAsDataURL(f)})(ev.target.files[i])}}
+function rpv(){var c=document.getElementById("photoPreviews");if(!c)return;var h="";for(var i=0;i<pendingPhotos.length;i++)h+='<div class="photo-preview"><img src="'+pendingPhotos[i].data+'"><button class="photo-remove" onclick="pendingPhotos.splice('+i+',1);rpv()">✕</button></div>';c.innerHTML=h}
+function submitEntry(m){var d=document.getElementById("fDesc").value.trim();if(!d)return;if(!entries[m])entries[m]=[];entries[m].push({id:Date.now(),createdAt:new Date().toISOString(),date:document.getElementById("fDate").value,category:document.getElementById("fCat").value,description:d,code:document.getElementById("fCode").value,hours:document.getElementById("fHours").value,status:document.getElementById("fStatus").value,notes:document.getElementById("fNotes").value,photos:pendingPhotos.slice()});pendingPhotos=[];dbPut();renderTabs();renderMem(m);toast("Activiteit opgeslagen!")}
+function delE(m,id){if(!confirm("Verwijderen?"))return;entries[m]=(entries[m]||[]).filter(function(e){return e.id!==id});dbPut();renderTabs();renderContent()}
+function togE(id){var b=document.getElementById("bo-"+id),a=document.getElementById("ar-"+id);if(b){b.classList.toggle("open");a.textContent=b.classList.contains("open")?"▲":"▼"}}
+function openNameEditor(){document.getElementById("nameInput").value=members.join("\n");document.getElementById("nameModal").classList.remove("hidden")}
+function closeNameEditor(){document.getElementById("nameModal").classList.add("hidden")}
+function saveNames(){var n=document.getElementById("nameInput").value.split("\n").map(function(s){return s.trim()}).filter(Boolean);if(!n.length)return;var ne={};for(var i=0;i<n.length;i++){var o=members[i];if(o&&entries[o])ne[n[i]]=entries[o]}members=n;entries=ne;if(activeTab!=="overzicht"&&n.indexOf(activeTab)===-1)activeTab="overzicht";dbPut();closeNameEditor();renderTabs();renderContent();toast("Namen opgeslagen!")}
+function exportExcel(){var wb=XLSX.utils.book_new(),ar=[["Datum","Teamlid","Categorie","Omschrijving","Uren","Status","Code","Opmerkingen"]];for(var i=0;i<members.length;i++){var it=(entries[members[i]]||[]).slice().sort(function(a,b){return new Date(a.date)-new Date(b.date)});for(var j=0;j<it.length;j++){var e=it[j];ar.push([e.date,members[i],e.category,e.description||"",parseFloat(e.hours)||0,e.status,e.code||"",e.notes||""])}}var ws=XLSX.utils.aoa_to_sheet(ar);ws["!cols"]=[{wch:12},{wch:18},{wch:22},{wch:50},{wch:8},{wch:14},{wch:40},{wch:30}];XLSX.utils.book_append_sheet(wb,ws,"Alle activiteiten");var ov=[["Teamlid","Totaal uren","Taken","Afgerond","Bezig","Gepland","Geblokkeerd"]];for(var i=0;i<members.length;i++){var it=entries[members[i]]||[],h=0,a=0,b=0,g=0,bl=0;for(var j=0;j<it.length;j++){h+=parseFloat(it[j].hours)||0;if(it[j].status==="Afgerond")a++;if(it[j].status==="Bezig")b++;if(it[j].status==="Gepland")g++;if(it[j].status==="Geblokkeerd")bl++}ov.push([members[i],h,it.length,a,b,g,bl])}XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ov),"Overzicht");for(var i=0;i<members.length;i++){var rw=[["Datum","Categorie","Omschrijving","Uren","Status","Code","Opmerkingen"]],it=(entries[members[i]]||[]).slice().sort(function(a,b){return new Date(a.date)-new Date(b.date)});for(var j=0;j<it.length;j++){var e=it[j];rw.push([e.date,e.category,e.description||"",parseFloat(e.hours)||0,e.status,e.code||"",e.notes||""])}var s=XLSX.utils.aoa_to_sheet(rw);s["!cols"]=[{wch:12},{wch:22},{wch:50},{wch:8},{wch:14},{wch:40},{wch:30}];XLSX.utils.book_append_sheet(wb,s,members[i].substring(0,31))}XLSX.writeFile(wb,"Robotica_Logboek.xlsx");toast("Excel gedownload!")}
+
+// START: app laadt meteen, database wordt op achtergrond geladen
+renderTabs();
+renderContent();
+dbGet();
+</script>
+</body>
+</html>
