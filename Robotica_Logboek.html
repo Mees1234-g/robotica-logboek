@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robotica Logboek — Ontwerpen 4</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0b1121;
+  --bg2: #0f172a;
+  --card: #1e293b;
+  --border: #334155;
+  --border2: #1e3a5f;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --blue: #3b82f6;
+  --blue2: #60a5fa;
+  --blue3: #2563eb;
+  --green: #10b981;
+  --yellow: #f59e0b;
+  --red: #ef4444;
+  --font: 'DM Sans', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* Header */
+.header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; background: linear-gradient(135deg, var(--bg2), var(--card)); border-bottom: 1px solid var(--border2); flex-wrap: wrap; gap: 12px; }
+.header-left { display: flex; align-items: center; gap: 12px; }
+.logo { font-size: 28px; background: var(--border2); border-radius: 10px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; }
+.header h1 { font-size: 18px; font-family: var(--mono); font-weight: 700; }
+.header p { font-size: 12px; color: var(--text3); }
+.header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.header-btn { background: transparent; border: 1px solid var(--border); color: var(--text2); border-radius: 8px; padding: 6px 14px; cursor: pointer; font-size: 13px; font-family: var(--font); transition: all 0.2s; }
+.header-btn:hover { border-color: var(--blue); color: var(--blue2); }
+.header-btn.danger { border-color: var(--red); color: var(--red); }
+
+/* Toast */
+.toast { background: var(--green); color: #fff; text-align: center; padding: 10px 20px; font-size: 14px; font-weight: 500; display: none; }
+.toast.show { display: block; }
+
+/* Tabs */
+.tab-bar { display: flex; gap: 4px; padding: 12px 24px; background: var(--bg2); overflow-x: auto; border-bottom: 1px solid var(--card); }
+.tab-bar::-webkit-scrollbar { height: 4px; }
+.tab-bar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.tab { background: transparent; border: none; color: var(--text3); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-family: var(--font); white-space: nowrap; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+.tab:hover { color: var(--text2); background: rgba(255,255,255,0.05); }
+.tab.active { background: var(--border2); color: var(--blue2); font-weight: 600; }
+.badge { background: var(--blue); color: #fff; border-radius: 10px; padding: 1px 7px; font-size: 11px; font-weight: 700; }
+
+/* Content */
+.content { padding: 24px; max-width: 1100px; margin: 0 auto; }
+
+/* Stats */
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 28px; }
+.stat-card { background: linear-gradient(135deg, var(--card), var(--bg2)); border: 1px solid var(--border2); border-radius: 12px; padding: 20px; text-align: center; }
+.stat-number { font-size: 28px; font-weight: 700; font-family: var(--mono); }
+.stat-label { font-size: 12px; color: var(--text3); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Section title */
+.section-title { font-size: 13px; font-weight: 600; color: var(--text2); margin-bottom: 16px; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; font-family: var(--mono); }
+
+/* Member grid */
+.member-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-bottom: 28px; }
+.member-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; cursor: pointer; transition: all 0.2s; }
+.member-card:hover { border-color: var(--blue); transform: translateY(-1px); }
+.member-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.member-name { font-weight: 600; font-size: 15px; }
+.member-hours { font-size: 13px; color: var(--blue); font-family: var(--mono); font-weight: 600; }
+.progress-bg { height: 6px; background: var(--bg2); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--green)); border-radius: 3px; transition: width 0.5s ease; }
+.member-card-footer { display: flex; justify-content: space-between; font-size: 12px; color: var(--text3); }
+.cat-tags { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.cat-tag { background: var(--bg2); padding: 3px 8px; border-radius: 6px; font-size: 11px; color: var(--text2); }
+
+/* Timeline */
+.timeline-item { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--card); }
+.timeline-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); margin-top: 6px; flex-shrink: 0; }
+.timeline-header { display: flex; gap: 10px; align-items: center; margin-bottom: 4px; flex-wrap: wrap; }
+.timeline-member { font-weight: 600; font-size: 14px; color: var(--blue2); }
+.timeline-date { font-size: 12px; color: var(--text3); font-family: var(--mono); }
+.timeline-desc { font-size: 14px; color: #cbd5e1; }
+.timeline-hours { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+/* Status badge */
+.status-badge { padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+.status-Gepland { background: rgba(245,158,11,0.15); color: var(--yellow); }
+.status-Bezig { background: rgba(59,130,246,0.15); color: var(--blue); }
+.status-Afgerond { background: rgba(16,185,129,0.15); color: var(--green); }
+.status-Geblokkeerd { background: rgba(239,68,68,0.15); color: var(--red); }
+
+/* Member page */
+.member-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+.member-title { font-size: 22px; font-weight: 700; }
+.member-meta { color: var(--text3); font-size: 14px; margin-top: 4px; }
+.add-btn { background: linear-gradient(135deg, var(--blue), var(--blue3)); color: #fff; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 600; font-family: var(--font); transition: all 0.2s; }
+.add-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+
+/* Form */
+.form-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 24px; animation: slideDown 0.2s ease; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+.form-title { margin: 0 0 20px; font-size: 17px; font-weight: 600; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 14px; }
+.form-group { margin-bottom: 14px; }
+.label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.input, .select-input { width: 100%; padding: 10px 12px; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; font-family: var(--font); outline: none; transition: border 0.2s; }
+.input:focus, .select-input:focus { border-color: var(--blue); }
+textarea.input { resize: vertical; }
+.code-input { font-family: var(--mono); font-size: 13px; background: var(--bg); color: #a5f3fc; }
+.submit-btn { background: linear-gradient(135deg, var(--green), #059669); color: #fff; border: none; padding: 12px 28px; border-radius: 10px; cursor: pointer; font-size: 15px; font-weight: 600; width: 100%; font-family: var(--font); transition: all 0.2s; }
+.submit-btn:hover { transform: translateY(-1px); }
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* Photo upload */
+.photo-area { border: 2px dashed var(--border); border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; color: var(--text3); font-size: 13px; transition: border-color 0.2s; }
+.photo-area:hover { border-color: var(--blue); }
+.photo-previews { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+.photo-preview { position: relative; width: 80px; height: 80px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+.photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+.photo-remove { position: absolute; top: 2px; right: 2px; background: var(--red); color: #fff; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+
+/* Entry cards */
+.entry-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; transition: all 0.2s; }
+.entry-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; cursor: pointer; gap: 12px; }
+.entry-header:hover { background: rgba(255,255,255,0.02); }
+.entry-left { display: flex; align-items: flex-start; gap: 12px; flex: 1; min-width: 0; }
+.entry-icon { font-size: 22px; flex-shrink: 0; }
+.entry-title { font-size: 14px; font-weight: 500; word-break: break-word; }
+.entry-meta { font-size: 12px; color: var(--text3); margin-top: 3px; font-family: var(--mono); }
+.entry-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.expand-icon { color: #475569; font-size: 11px; }
+.entry-body { padding: 0 18px 18px; border-top: 1px solid var(--bg2); display: none; }
+.entry-body.open { display: block; }
+.entry-notes { font-size: 14px; color: var(--text2); margin-top: 14px; line-height: 1.5; }
+.code-block { margin-top: 14px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+.code-block-header { background: var(--border); padding: 6px 14px; font-size: 12px; font-weight: 600; color: var(--text2); font-family: var(--mono); }
+.code-pre { background: var(--bg); padding: 14px; margin: 0; font-size: 13px; font-family: var(--mono); color: #a5f3fc; overflow-x: auto; white-space: pre-wrap; line-height: 1.5; }
+.entry-photos { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.entry-photos img { max-width: 250px; max-height: 200px; border-radius: 8px; border: 1px solid var(--border); object-fit: cover; }
+.delete-btn { background: transparent; border: 1px solid var(--red); color: var(--red); padding: 6px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; margin-top: 14px; font-family: var(--font); }
+
+/* Empty state */
+.empty-state { text-align: center; padding: 60px 20px; color: var(--text3); }
+.empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+
+/* Modal */
+.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+.modal { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; max-width: 440px; width: 100%; }
+.modal h3 { margin: 0 0 8px; font-size: 18px; }
+.modal .subtitle { margin: 0 0 16px; font-size: 13px; color: var(--text3); }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+.cancel-btn { background: transparent; border: 1px solid var(--border); color: var(--text2); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 14px; font-family: var(--font); }
+.save-btn { background: var(--blue); color: #fff; border: none; padding: 8px 22px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; font-family: var(--font); }
+
+.hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">⚙️</div>
+    <div>
+      <h1>Robotica Logboek</h1>
+      <p>Ontwerpen 4 — Werkzaamheden Tracker</p>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="header-btn" onclick="openNameEditor()">✏️ Namen</button>
+    <button class="header-btn" onclick="exportExcel()">📥 Export Excel</button>
+    <button class="header-btn danger" onclick="resetAll()">🗑️ Reset</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="tab-bar" id="tabBar"></div>
+<div class="content" id="content"></div>
+
+<!-- Name editor modal -->
+<div class="modal-overlay hidden" id="nameModal" onclick="closeNameEditor()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3>Teamleden aanpassen</h3>
+    <p class="subtitle">Eén naam per regel (max 7). Bestaande entries worden gekoppeld aan de nieuwe namen.</p>
+    <textarea class="input" id="nameInput" rows="8" style="min-height:160px" placeholder="Naam 1&#10;Naam 2&#10;Naam 3..."></textarea>
+    <div class="modal-actions">
+      <button class="cancel-btn" onclick="closeNameEditor()">Annuleren</button>
+      <button class="save-btn" onclick="saveNames()">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CAT_ICONS = {"Onderzoek":"🔍","Hardware ontwerp":"🔧","Software ontwerp":"💻","Solderen/bouwen":"⚡","Programmeren":"🖥️","Testen & debuggen":"🐛","Documentatie":"📄","Vergadering":"👥","Presentatie":"📊","Overig":"📌"};
+const CATEGORIES = Object.keys(CAT_ICONS);
+const STATUSES = ["Gepland","Bezig","Afgerond","Geblokkeerd"];
+const DEFAULT_MEMBERS = ["Teamlid 1","Teamlid 2","Teamlid 3","Teamlid 4","Teamlid 5","Teamlid 6","Teamlid 7"];
+
+let members = JSON.parse(localStorage.getItem('rb-members')) || [...DEFAULT_MEMBERS];
+let entries = JSON.parse(localStorage.getItem('rb-entries')) || {};
+let activeTab = 'overzicht';
+
+function save() {
+  localStorage.setItem('rb-members', JSON.stringify(members));
+  localStorage.setItem('rb-entries', JSON.stringify(entries));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+function getStats(m) {
+  const items = entries[m] || [];
+  const totalHours = items.reduce((s,e) => s + (parseFloat(e.hours)||0), 0);
+  const completed = items.filter(e => e.status==='Afgerond').length;
+  const catHours = {};
+  items.forEach(e => { catHours[e.category] = (catHours[e.category]||0) + (parseFloat(e.hours)||0); });
+  return { total: items.length, totalHours, completed, catHours };
+}
+
+function switchTab(tab) { activeTab = tab; renderTabs(); renderContent(); }
+
+function renderTabs() {
+  let html = `<button class="tab ${activeTab==='overzicht'?'active':''}" onclick="switchTab('overzicht')">📊 Overzicht</button>`;
+  members.forEach(m => {
+    const c = (entries[m]||[]).length;
+    html += `<button class="tab ${activeTab===m?'active':''}" onclick="switchTab('${m.replace(/'/g,"\\'")}')">${m}${c?` <span class="badge">${c}</span>`:''}</button>`;
+  });
+  document.getElementById('tabBar').innerHTML = html;
+}
+
+function renderContent() {
+  if (activeTab === 'overzicht') renderOverview();
+  else renderMember(activeTab);
+}
+
+function renderOverview() {
+  const allEntries = members.flatMap(m => (entries[m]||[]).map(e=>({...e, member:m})));
+  const totalH = allEntries.reduce((s,e) => s+(parseFloat(e.hours)||0), 0);
+  const totalT = allEntries.length;
+  const doneT = allEntries.filter(e=>e.status==='Afgerond').length;
+
+  let html = `
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-number">${totalT}</div><div class="stat-label">Totaal taken</div></div>
+      <div class="stat-card"><div class="stat-number" style="color:var(--green)">${doneT}</div><div class="stat-label">Afgerond</div></div>
+      <div class="stat-card"><div class="stat-number" style="color:var(--blue)">${totalH.toFixed(1)}</div><div class="stat-label">Totaal uren</div></div>
+      <div class="stat-card"><div class="stat-number" style="color:var(--yellow)">${members.length}</div><div class="stat-label">Teamleden</div></div>
+    </div>
+    <div class="section-title">Voortgang per teamlid</div>
+    <div class="member-grid">`;
+
+  members.forEach(m => {
+    const s = getStats(m);
+    const pct = s.total > 0 ? Math.round((s.completed/s.total)*100) : 0;
+    const tags = Object.entries(s.catHours).slice(0,3).map(([c,h]) => `<span class="cat-tag">${CAT_ICONS[c]} ${h.toFixed(1)}u</span>`).join('');
+    html += `
+      <div class="member-card" onclick="switchTab('${m.replace(/'/g,"\\'")}')">
+        <div class="member-card-header"><span class="member-name">${m}</span><span class="member-hours">${s.totalHours.toFixed(1)} uur</span></div>
+        <div class="progress-bg"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div class="member-card-footer"><span>${s.completed}/${s.total} taken afgerond</span><span style="color:var(--green);font-weight:600">${pct}%</span></div>
+        ${tags ? `<div class="cat-tags">${tags}</div>` : ''}
+      </div>`;
+  });
+  html += '</div>';
+
+  if (allEntries.length > 0) {
+    html += '<div class="section-title">Recente activiteit</div><div>';
+    allEntries.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0,10).forEach(e => {
+      html += `
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div>
+            <div class="timeline-header">
+              <span class="timeline-member">${e.member}</span>
+              <span class="timeline-date">${e.date}</span>
+              <span class="status-badge status-${e.status}">${e.status}</span>
+            </div>
+            <div class="timeline-desc">${CAT_ICONS[e.category]} ${escHtml(e.description)}</div>
+            ${e.hours ? `<div class="timeline-hours">${e.hours} uur</div>` : ''}
+          </div>
+        </div>`;
+    });
+    html += '</div>';
+  }
+  document.getElementById('content').innerHTML = html;
+}
+
+function renderMember(member) {
+  const items = entries[member] || [];
+  const totalH = items.reduce((s,e) => s+(parseFloat(e.hours)||0), 0);
+  const today = new Date().toISOString().split('T')[0];
+
+  let catOpts = CATEGORIES.map(c => `<option>${c}</option>`).join('');
+  let statusOpts = STATUSES.map(s => `<option${s==='Bezig'?' selected':''}>${s}</option>`).join('');
+
+  let html = `
+    <div class="member-header">
+      <div><div class="member-title">${member}</div><div class="member-meta">${items.length} activiteiten · ${totalH.toFixed(1)} uur totaal</div></div>
+      <button class="add-btn" onclick="toggleForm()">+ Activiteit toevoegen</button>
+    </div>
+    <div class="form-card hidden" id="addForm">
+      <div class="form-title">Nieuwe activiteit</div>
+      <div class="form-grid">
+        <div class="form-group"><label class="label">Datum</label><input type="date" class="input" id="fDate" value="${today}"></div>
+        <div class="form-group"><label class="label">Categorie</label><select class="input select-input" id="fCat">${catOpts}</select></div>
+        <div class="form-group"><label class="label">Uren</label><input type="number" step="0.5" min="0" class="input" id="fHours" placeholder="bijv. 2.5"></div>
+        <div class="form-group"><label class="label">Status</label><select class="input select-input" id="fStatus">${statusOpts}</select></div>
+      </div>
+      <div class="form-group"><label class="label">Omschrijving werkzaamheden *</label><textarea class="input" id="fDesc" rows="3" placeholder="Beschrijf wat je hebt gedaan..."></textarea></div>
+      <div class="form-group"><label class="label">Code (optioneel)</label><textarea class="input code-input" id="fCode" rows="4" placeholder="Plak hier eventueel je code..."></textarea></div>
+      <div class="form-group"><label class="label">Opmerkingen (optioneel)</label><textarea class="input" id="fNotes" rows="2" placeholder="Extra opmerkingen, links..."></textarea></div>
+      <div class="form-group">
+        <label class="label">Foto's (optioneel)</label>
+        <div class="photo-area" onclick="document.getElementById('fPhotos').click()">📷 Klik om foto's toe te voegen
+          <input type="file" id="fPhotos" accept="image/*" multiple onchange="handlePhotos(event)" style="display:none">
+        </div>
+        <div class="photo-previews" id="photoPreviews"></div>
+      </div>
+      <button class="submit-btn" onclick="submitEntry('${member.replace(/'/g,"\\'")}')">Opslaan</button>
+    </div>`;
+
+  if (items.length === 0) {
+    html += '<div class="empty-state"><div class="icon">📋</div><p>Nog geen activiteiten.<br>Klik op "+ Activiteit toevoegen" om te beginnen.</p></div>';
+  }
+
+  [...items].sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(e => {
+    const photos = (e.photos||[]).map(p => `<img src="${p.data}" alt="${escHtml(p.name)}">`).join('');
+    html += `
+      <div class="entry-card">
+        <div class="entry-header" onclick="toggleEntry(${e.id})">
+          <div class="entry-left">
+            <span class="entry-icon">${CAT_ICONS[e.category]}</span>
+            <div><div class="entry-title">${escHtml(e.description)}</div><div class="entry-meta">${e.date} · ${e.category} · ${e.hours} uur</div></div>
+          </div>
+          <div class="entry-right">
+            <span class="status-badge status-${e.status}">${e.status}</span>
+            <span class="expand-icon" id="arrow-${e.id}">▼</span>
+          </div>
+        </div>
+        <div class="entry-body" id="body-${e.id}">
+          ${e.notes ? `<div class="entry-notes"><strong>Opmerkingen:</strong> ${escHtml(e.notes)}</div>` : ''}
+          ${e.code ? `<div class="code-block"><div class="code-block-header">Code</div><pre class="code-pre">${escHtml(e.code)}</pre></div>` : ''}
+          ${photos ? `<div class="entry-photos">${photos}</div>` : ''}
+          <button class="delete-btn" onclick="deleteEntry('${member.replace(/'/g,"\\'")}',${e.id})">🗑️ Verwijderen</button>
+        </div>
+      </div>`;
+  });
+
+  document.getElementById('content').innerHTML = html;
+}
+
+let pendingPhotos = [];
+
+function toggleForm() {
+  const f = document.getElementById('addForm');
+  f.classList.toggle('hidden');
+  pendingPhotos = [];
+}
+
+function handlePhotos(e) {
+  Array.from(e.target.files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      pendingPhotos.push({ name: file.name, data: ev.target.result });
+      renderPhotoPreviews();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderPhotoPreviews() {
+  const container = document.getElementById('photoPreviews');
+  if (!container) return;
+  container.innerHTML = pendingPhotos.map((p,i) => `
+    <div class="photo-preview">
+      <img src="${p.data}" alt="${escHtml(p.name)}">
+      <button class="photo-remove" onclick="pendingPhotos.splice(${i},1);renderPhotoPreviews()">✕</button>
+    </div>
+  `).join('');
+}
+
+function submitEntry(member) {
+  const desc = document.getElementById('fDesc').value.trim();
+  if (!desc) return;
+  const entry = {
+    id: Date.now(),
+    createdAt: new Date().toISOString(),
+    date: document.getElementById('fDate').value,
+    category: document.getElementById('fCat').value,
+    description: desc,
+    code: document.getElementById('fCode').value,
+    hours: document.getElementById('fHours').value,
+    status: document.getElementById('fStatus').value,
+    notes: document.getElementById('fNotes').value,
+    photos: [...pendingPhotos]
+  };
+  if (!entries[member]) entries[member] = [];
+  entries[member].push(entry);
+  pendingPhotos = [];
+  save(); renderTabs(); renderMember(member);
+  showToast('Activiteit opgeslagen!');
+}
+
+function deleteEntry(member, id) {
+  if (!confirm('Weet je zeker dat je deze activiteit wilt verwijderen?')) return;
+  entries[member] = (entries[member]||[]).filter(e => e.id !== id);
+  save(); renderTabs(); renderContent();
+}
+
+function toggleEntry(id) {
+  const body = document.getElementById('body-'+id);
+  const arrow = document.getElementById('arrow-'+id);
+  if (body) { body.classList.toggle('open'); arrow.textContent = body.classList.contains('open') ? '▲' : '▼'; }
+}
+
+function openNameEditor() {
+  document.getElementById('nameInput').value = members.join('\n');
+  document.getElementById('nameModal').classList.remove('hidden');
+}
+function closeNameEditor() { document.getElementById('nameModal').classList.add('hidden'); }
+
+function saveNames() {
+  const names = document.getElementById('nameInput').value.split('\n').map(n=>n.trim()).filter(Boolean);
+  if (!names.length) return;
+  const newEntries = {};
+  names.forEach((name, i) => {
+    const old = members[i];
+    if (old && entries[old]) newEntries[name] = entries[old];
+  });
+  members = names;
+  entries = newEntries;
+  if (activeTab !== 'overzicht' && !names.includes(activeTab)) activeTab = 'overzicht';
+  save(); closeNameEditor(); renderTabs(); renderContent();
+  showToast('Namen opgeslagen!');
+}
+
+function resetAll() {
+  if (!confirm('Weet je zeker dat je ALLES wilt resetten?')) return;
+  members = [...DEFAULT_MEMBERS]; entries = {};
+  activeTab = 'overzicht';
+  save(); renderTabs(); renderContent();
+}
+
+function exportExcel() {
+  const wb = XLSX.utils.book_new();
+  // All activities
+  const allRows = [["Datum","Teamlid","Categorie","Omschrijving","Uren","Status","Code","Opmerkingen"]];
+  members.forEach(m => {
+    (entries[m]||[]).sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(e => {
+      allRows.push([e.date, m, e.category, e.description||"", parseFloat(e.hours)||0, e.status, e.code||"", e.notes||""]);
+    });
+  });
+  const wsAll = XLSX.utils.aoa_to_sheet(allRows);
+  wsAll["!cols"] = [{wch:12},{wch:18},{wch:22},{wch:50},{wch:8},{wch:14},{wch:40},{wch:30}];
+  XLSX.utils.book_append_sheet(wb, wsAll, "Alle activiteiten");
+
+  // Overview
+  const ovRows = [["Teamlid","Totaal uren","Taken","Afgerond","Bezig","Gepland","Geblokkeerd"]];
+  members.forEach(m => {
+    const it = entries[m]||[];
+    ovRows.push([m, it.reduce((s,e)=>s+(parseFloat(e.hours)||0),0), it.length, it.filter(e=>e.status==="Afgerond").length, it.filter(e=>e.status==="Bezig").length, it.filter(e=>e.status==="Gepland").length, it.filter(e=>e.status==="Geblokkeerd").length]);
+  });
+  const wsOv = XLSX.utils.aoa_to_sheet(ovRows);
+  XLSX.utils.book_append_sheet(wb, wsOv, "Overzicht");
+
+  // Per member
+  members.forEach(m => {
+    const rows = [["Datum","Categorie","Omschrijving","Uren","Status","Code","Opmerkingen"]];
+    (entries[m]||[]).sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(e => {
+      rows.push([e.date, e.category, e.description||"", parseFloat(e.hours)||0, e.status, e.code||"", e.notes||""]);
+    });
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws["!cols"] = [{wch:12},{wch:22},{wch:50},{wch:8},{wch:14},{wch:40},{wch:30}];
+    XLSX.utils.book_append_sheet(wb, ws, m.substring(0,31));
+  });
+
+  XLSX.writeFile(wb, "Robotica_Logboek.xlsx");
+  showToast("Excel gedownload! Je kunt het op OneDrive zetten.");
+}
+
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
+
+// Init
+renderTabs();
+renderContent();
+</script>
+</body>
+</html>
