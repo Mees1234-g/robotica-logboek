@@ -16,8 +16,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .header h1{font-size:18px;font-family:var(--mono);font-weight:700}
 .header p{font-size:12px;color:var(--text3)}
 .header-actions{display:flex;gap:8px;flex-wrap:wrap}
-.header-btn{background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:8px;padding:6px 14px;cursor:pointer;font-size:13px;font-family:var(--font);transition:all .2s}
-.header-btn:hover{border-color:var(--blue);color:var(--blue2)}
+.hbtn{background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:8px;padding:6px 14px;cursor:pointer;font-size:13px;font-family:var(--font);transition:all .2s}
+.hbtn:hover{border-color:var(--blue);color:var(--blue2)}
 .sync-status{display:flex;align-items:center;gap:6px;font-size:12px;font-family:var(--mono)}
 .sync-dot{width:8px;height:8px;border-radius:50%;animation:pulse 2s infinite}
 .sync-ok .sync-dot{background:var(--green)}.sync-ok{color:var(--green)}
@@ -39,14 +39,16 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .member-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:28px}
 .member-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;cursor:pointer;transition:all .2s}
 .member-card:hover{border-color:var(--blue);transform:translateY(-1px)}
-.member-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.member-name{font-weight:600;font-size:15px}
-.member-hours{font-size:13px;color:var(--blue);font-family:var(--mono);font-weight:600}
+.mc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.mc-name{font-weight:600;font-size:15px;display:flex;align-items:center;gap:8px}
+.mc-hours{font-size:13px;color:var(--blue);font-family:var(--mono);font-weight:600}
 .progress-bg{height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;margin-bottom:8px}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:3px;transition:width .5s ease}
-.member-card-footer{display:flex;justify-content:space-between;font-size:12px;color:var(--text3)}
+.mc-footer{display:flex;justify-content:space-between;font-size:12px;color:var(--text3)}
 .cat-tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
 .cat-tag{background:var(--bg2);padding:3px 8px;border-radius:6px;font-size:11px;color:var(--text2)}
+.online-dot{width:10px;height:10px;border-radius:50%;background:var(--green);display:inline-block;box-shadow:0 0 6px rgba(16,185,129,.5)}
+.online-label{font-size:11px;color:var(--green);font-weight:600;margin-top:6px}
 .timeline-item{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--card)}
 .timeline-dot{width:8px;height:8px;border-radius:50%;background:var(--blue);margin-top:6px;flex-shrink:0}
 .timeline-header{display:flex;gap:10px;align-items:center;margin-bottom:4px;flex-wrap:wrap}
@@ -56,9 +58,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .timeline-hours{font-size:12px;color:var(--text3);margin-top:2px}
 .status-badge{padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600}
 .status-Gepland{background:rgba(245,158,11,.15);color:var(--yellow)}.status-Bezig{background:rgba(59,130,246,.15);color:var(--blue)}.status-Afgerond{background:rgba(16,185,129,.15);color:var(--green)}.status-Geblokkeerd{background:rgba(239,68,68,.15);color:var(--red)}
-.member-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px}
-.member-title{font-size:22px;font-weight:700}
-.member-meta{color:var(--text3);font-size:14px;margin-top:4px}
+.mem-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.mem-title{font-size:22px;font-weight:700}
+.mem-meta{color:var(--text3);font-size:14px;margin-top:4px}
 .add-btn{background:linear-gradient(135deg,var(--blue),var(--blue3));color:#fff;border:none;padding:10px 20px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;font-family:var(--font)}
 .form-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:24px}
 .form-title{margin:0 0 20px;font-size:17px;font-weight:600}
@@ -69,8 +71,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .input:focus{border-color:var(--blue)}
 textarea.input{resize:vertical}
 .code-input{font-family:var(--mono);font-size:13px;background:var(--bg);color:#a5f3fc}
-.submit-btn{background:linear-gradient(135deg,var(--green),#059669);color:#fff;border:none;padding:12px 28px;border-radius:10px;cursor:pointer;font-size:15px;font-weight:600;font-family:var(--font)}
-.cancel-form-btn{background:var(--border);color:var(--text2);border:none;padding:12px 20px;border-radius:10px;cursor:pointer;font-size:15px;font-family:var(--font)}
+.sbtn{background:linear-gradient(135deg,var(--green),#059669);color:#fff;border:none;padding:12px 28px;border-radius:10px;cursor:pointer;font-size:15px;font-weight:600;font-family:var(--font)}
+.cbtn{background:var(--border);color:var(--text2);border:none;padding:12px 20px;border-radius:10px;cursor:pointer;font-size:15px;font-family:var(--font)}
 .photo-area{border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;cursor:pointer;color:var(--text3);font-size:13px}
 .photo-previews{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
 .photo-preview{position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
@@ -96,73 +98,302 @@ textarea.input{resize:vertical}
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px}
 .modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:440px;width:100%}
 .modal h3{margin:0 0 8px;font-size:18px}
-.modal .subtitle{margin:0 0 16px;font-size:13px;color:var(--text3)}
+.modal .sub{margin:0 0 16px;font-size:13px;color:var(--text3)}
 .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
-.mbtn{padding:8px 18px;border-radius:8px;cursor:pointer;font-size:14px;font-family:var(--font);border:none}
-.mbtn-c{background:transparent;border:1px solid var(--border);color:var(--text2)}
-.mbtn-s{background:var(--blue);color:#fff;font-weight:600}
+.mb{padding:8px 18px;border-radius:8px;cursor:pointer;font-size:14px;font-family:var(--font);border:none}
+.mb-c{background:transparent;border:1px solid var(--border);color:var(--text2)}
+.mb-s{background:var(--blue);color:#fff;font-weight:600}
 .hidden{display:none}
+.user-select{background:var(--card);border:1px solid var(--border2);border-radius:14px;padding:30px;max-width:400px;margin:80px auto;text-align:center}
+.user-select h2{margin-bottom:16px;font-size:20px}
+.user-select button{display:block;width:100%;padding:12px;margin:6px 0;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;cursor:pointer;font-family:var(--font);transition:all .2s}
+.user-select button:hover{border-color:var(--blue);background:var(--border2)}
 </style>
 </head>
 <body>
-<div class="header"><div class="header-left"><div class="logo">⚙️</div><div><h1>Robotica Logboek</h1><p>Ontwerpen 4 — Werkzaamheden Tracker</p></div></div><div class="sync-status sync-err" id="ss"><div class="sync-dot"></div><span id="st">Verbinden...</span></div><div class="header-actions"><button class="header-btn" onclick="openNE()">✏️ Namen</button><button class="header-btn" onclick="exportXL()">📥 Export Excel</button></div></div>
+ 
+<!-- STAP 1: Kies wie je bent -->
+<div id="userSelect" class="user-select">
+  <h2>Wie ben je?</h2>
+  <p style="color:var(--text3);margin-bottom:20px;font-size:13px">Kies je naam zodat we kunnen zien wie er actief is</p>
+  <div id="userButtons"></div>
+</div>
+ 
+<!-- STAP 2: De app -->
+<div class="hidden" id="app">
+<div class="header">
+  <div class="header-left"><div class="logo">⚙️</div><div><h1>Robotica Logboek</h1><p>Ontwerpen 4 — Werkzaamheden Tracker</p></div></div>
+  <div class="sync-status sync-err" id="ss"><div class="sync-dot"></div><span id="st">Verbinden...</span></div>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <span id="whoAmI" style="font-size:12px;color:var(--blue2);font-family:var(--mono)"></span>
+    <div class="header-actions">
+      <button class="hbtn" onclick="openNE()">✏️ Namen</button>
+      <button class="hbtn" onclick="exportXL()">📥 Export Excel</button>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 <div class="tab-bar" id="tabBar"></div>
+ 
+<!-- Formulier staat BUITEN content, wordt nooit verwijderd door re-render -->
+<div class="hidden" id="formWrap" style="padding:0 24px;max-width:1100px;margin:0 auto">
+  <div class="form-card" style="margin-top:24px">
+    <div class="form-title">Nieuwe activiteit</div>
+    <div class="form-grid">
+      <div class="form-group"><label class="label">Datum</label><input type="date" class="input" id="fD"></div>
+      <div class="form-group"><label class="label">Categorie</label><select class="input" id="fC"></select></div>
+      <div class="form-group"><label class="label">Uren</label><input type="number" step="0.5" min="0" class="input" id="fH" placeholder="bijv. 2.5"></div>
+      <div class="form-group"><label class="label">Status</label><select class="input" id="fS"></select></div>
+    </div>
+    <div class="form-group"><label class="label">Omschrijving *</label><textarea class="input" id="fO" rows="3" placeholder="Beschrijf wat je hebt gedaan..."></textarea></div>
+    <div class="form-group"><label class="label">Code (optioneel)</label><textarea class="input code-input" id="fK" rows="4" placeholder="Plak hier je code..."></textarea></div>
+    <div class="form-group"><label class="label">Opmerkingen (optioneel)</label><textarea class="input" id="fN" rows="2" placeholder="Extra info, links..."></textarea></div>
+    <div class="form-group"><label class="label">Foto's (optioneel)</label>
+      <div class="photo-area" onclick="document.getElementById('fP').click()">📷 Klik om foto's toe te voegen<input type="file" id="fP" accept="image/*" multiple onchange="hP(event)" style="display:none"></div>
+      <div class="photo-previews" id="pp"></div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="sbtn" onclick="submitE()" style="flex:1">Opslaan</button>
+      <button class="cbtn" onclick="closeForm()">Annuleren</button>
+    </div>
+  </div>
+</div>
+ 
 <div class="content" id="content"></div>
-<div class="modal-overlay hidden" id="nm" onclick="closeNE()"><div class="modal" onclick="event.stopPropagation()"><h3>Teamleden aanpassen</h3><p class="subtitle">Eén naam per regel.</p><textarea class="input" id="ni" rows="8" style="min-height:160px"></textarea><div class="modal-actions"><button class="mbtn mbtn-c" onclick="closeNE()">Annuleren</button><button class="mbtn mbtn-s" onclick="saveN()">Opslaan</button></div></div></div>
+ 
+<div class="modal-overlay hidden" id="nm" onclick="closeNE()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3>Teamleden aanpassen</h3>
+    <p class="sub">Eén naam per regel.</p>
+    <textarea class="input" id="ni" rows="8" style="min-height:160px"></textarea>
+    <div class="modal-actions"><button class="mb mb-c" onclick="closeNE()">Annuleren</button><button class="mb mb-s" onclick="saveN()">Opslaan</button></div>
+  </div>
+</div>
+</div>
+ 
 <script>
 var DB="https://robotica-logboek-default-rtdb.europe-west1.firebasedatabase.app";
 var CI={"Onderzoek":"🔍","Hardware ontwerp":"🔧","Software ontwerp":"💻","Solderen/bouwen":"⚡","Programmeren":"🖥️","Testen & debuggen":"🐛","Documentatie":"📄","Vergadering":"👥","Presentatie":"📊","Overig":"📌"};
 var CL=Object.keys(CI),SL=["Gepland","Bezig","Afgerond","Geblokkeerd"];
 var DM=["Teamlid 1","Teamlid 2","Teamlid 3","Teamlid 4","Teamlid 5","Teamlid 6","Teamlid 7"];
-var M=DM.slice(),E={},AT="overzicht",PP=[],UB=false;
+var M=DM.slice(),E={},AT="overzicht",PP=[];
+var myName="";
+var presence={};
+var formOpen=false;
+var formMember="";
  
 function esc(s){var d=document.createElement("div");d.textContent=s||"";return d.innerHTML}
 function toast(m){var t=document.getElementById("toast");t.textContent=m;t.classList.add("show");setTimeout(function(){t.classList.remove("show")},4000)}
-function ss(ok){document.getElementById("ss").className="sync-status "+(ok?"sync-ok":"sync-err");document.getElementById("st").textContent=ok?"Live verbonden":"Offline"}
+function setSync(ok){document.getElementById("ss").className="sync-status "+(ok?"sync-ok":"sync-err");document.getElementById("st").textContent=ok?"Live verbonden":"Offline"}
  
-function dbSave(){var x=new XMLHttpRequest();x.open("PUT",DB+"/.json",true);x.setRequestHeader("Content-Type","application/json");x.timeout=8000;x.onload=function(){if(x.status===200){ss(true);document.getElementById("st").textContent="Opgeslagen ✓";setTimeout(function(){document.getElementById("st").textContent="Live verbonden"},2000)}else ss(false)};x.onerror=x.ontimeout=function(){ss(false)};x.send(JSON.stringify({members:M,entries:E}))}
+// Vul de categorie en status dropdowns in (eenmalig)
+function initForm(){
+  var cs=document.getElementById("fC"),ss=document.getElementById("fS");
+  cs.innerHTML="";ss.innerHTML="";
+  for(var i=0;i<CL.length;i++){var o=document.createElement("option");o.textContent=CL[i];cs.appendChild(o)}
+  for(var i=0;i<SL.length;i++){var o=document.createElement("option");o.textContent=SL[i];if(SL[i]==="Bezig")o.selected=true;ss.appendChild(o)}
+  document.getElementById("fD").value=new Date().toISOString().split("T")[0];
+}
  
-function dbLoad(cb){var x=new XMLHttpRequest();x.open("GET",DB+"/.json",true);x.timeout=5000;x.onload=function(){if(x.status===200){try{var d=JSON.parse(x.responseText);if(d){M=d.members||DM.slice();E=d.entries||{}}ss(true);if(cb)cb()}catch(e){ss(false)}}else ss(false)};x.onerror=x.ontimeout=function(){ss(false)};x.send()}
+/* === DATABASE === */
+function dbSave(){
+  var payload={members:M,entries:E,presence:presence};
+  var x=new XMLHttpRequest();x.open("PUT",DB+"/.json",true);
+  x.setRequestHeader("Content-Type","application/json");x.timeout=8000;
+  x.onload=function(){if(x.status===200){setSync(true);document.getElementById("st").textContent="Opgeslagen ✓";setTimeout(function(){document.getElementById("st").textContent="Live verbonden"},2000)}else setSync(false)};
+  x.onerror=x.ontimeout=function(){setSync(false)};
+  x.send(JSON.stringify(payload));
+}
  
-function bgRefresh(){if(UB)return;var x=new XMLHttpRequest();x.open("GET",DB+"/.json",true);x.timeout=5000;x.onload=function(){if(x.status===200&&!UB){try{var d=JSON.parse(x.responseText);if(d){var nM=d.members||DM.slice(),nE=d.entries||{};var o=JSON.stringify({m:M,e:E}),n=JSON.stringify({m:nM,e:nE});if(o!==n){M=nM;E=nE;rT();rC()}}ss(true)}catch(e){}}};x.onerror=x.ontimeout=function(){};x.send()}
-setInterval(bgRefresh,15000);
+function dbLoad(cb){
+  var x=new XMLHttpRequest();x.open("GET",DB+"/.json",true);x.timeout=5000;
+  x.onload=function(){if(x.status===200){try{var d=JSON.parse(x.responseText);if(d){M=d.members||DM.slice();E=d.entries||{};presence=d.presence||{}}setSync(true);if(cb)cb()}catch(e){setSync(false)}}else setSync(false)};
+  x.onerror=x.ontimeout=function(){setSync(false)};x.send();
+}
  
+// Stille refresh — update data + presence maar NOOIT het formulier
+function bgRefresh(){
+  var x=new XMLHttpRequest();x.open("GET",DB+"/.json",true);x.timeout=5000;
+  x.onload=function(){if(x.status===200){try{var d=JSON.parse(x.responseText);if(d){
+    var nM=d.members||DM.slice(),nE=d.entries||{},nP=d.presence||{};
+    var changed=JSON.stringify({m:M,e:E})!==JSON.stringify({m:nM,e:nE});
+    var presChanged=JSON.stringify(presence)!==JSON.stringify(nP);
+    M=nM;E=nE;presence=nP;
+    // Altijd tabs updaten (voor badges)
+    rT();
+    // Content alleen updaten als formulier NIET open is
+    if(!formOpen&&(changed||presChanged))rC();
+    // Als formulier WEL open is maar presence veranderd, update alleen presence-indicator
+  }setSync(true)}catch(e){}}};
+  x.onerror=x.ontimeout=function(){};x.send();
+}
+setInterval(bgRefresh,10000);
+ 
+// Presence updaten: schrijf mijn naam + huidige tab
+function updatePresence(){
+  if(!myName)return;
+  presence[myName]={tab:AT,ts:Date.now()};
+  // Schrijf alleen presence, niet alles
+  var x=new XMLHttpRequest();x.open("PUT",DB+"/presence.json",true);
+  x.setRequestHeader("Content-Type","application/json");x.timeout=3000;
+  x.send(JSON.stringify(presence));
+}
+setInterval(updatePresence,8000);
+ 
+function isOnline(name){
+  if(!presence[name])return false;
+  return(Date.now()-presence[name].ts)<30000; // actief in laatste 30 sec
+}
+function getActivity(name){
+  if(!presence[name]||!isOnline(name))return null;
+  return presence[name].tab;
+}
+ 
+/* === USER SELECT === */
+function showUserSelect(){
+  var c=document.getElementById("userButtons");c.innerHTML="";
+  for(var i=0;i<M.length;i++){
+    (function(name){
+      var b=document.createElement("button");
+      b.textContent=name;
+      b.onclick=function(){selectUser(name)};
+      c.appendChild(b);
+    })(M[i]);
+  }
+}
+ 
+function selectUser(name){
+  myName=name;
+  localStorage.setItem("rb-user",name);
+  document.getElementById("userSelect").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+  document.getElementById("whoAmI").textContent="👤 "+name;
+  updatePresence();
+  rT();rC();
+}
+ 
+/* === STATS === */
 function gs(m){var it=E[m]||[],h=0,dn=0,ch={};for(var i=0;i<it.length;i++){h+=parseFloat(it[i].hours)||0;if(it[i].status==="Afgerond")dn++;var c=it[i].category;ch[c]=(ch[c]||0)+(parseFloat(it[i].hours)||0)}return{n:it.length,h:h,dn:dn,ch:ch}}
-function st(t){AT=t;UB=false;rT();rC()}
  
-function rT(){var h='<button class="tab '+(AT==="overzicht"?"active":"")+'" onclick="st(\'overzicht\')">📊 Overzicht</button>';for(var i=0;i<M.length;i++){var m=M[i],c=(E[m]||[]).length;h+='<button class="tab '+(AT===m?"active":"")+'" onclick="st(\''+m.replace(/'/g,"\\'")+"')\">"+esc(m)+(c?' <span class="badge">'+c+"</span>":"")+"</button>"}document.getElementById("tabBar").innerHTML=h}
+/* === TABS === */
+function switchTab(t){AT=t;formOpen=false;document.getElementById("formWrap").classList.add("hidden");rT();rC();updatePresence()}
+ 
+function rT(){
+  var h='<button class="tab '+(AT==="overzicht"?"active":"")+'" onclick="switchTab(\'overzicht\')">📊 Overzicht</button>';
+  for(var i=0;i<M.length;i++){var m=M[i],c=(E[m]||[]).length,on=isOnline(m);
+    h+='<button class="tab '+(AT===m?"active":"")+'" onclick="switchTab(\''+m.replace(/'/g,"\\'")+'\')">'
+      +(on?'<span class="online-dot" style="width:6px;height:6px"></span>':'')+esc(m)
+      +(c?' <span class="badge">'+c+'</span>':'')+'</button>'}
+  document.getElementById("tabBar").innerHTML=h;
+}
+ 
 function rC(){if(AT==="overzicht")rO();else rM(AT)}
  
-function rO(){var a=[],th=0,dn=0;for(var i=0;i<M.length;i++){var it=E[M[i]]||[];for(var j=0;j<it.length;j++){a.push(Object.assign({},it[j],{member:M[i]}));th+=parseFloat(it[j].hours)||0;if(it[j].status==="Afgerond")dn++}}
-var h='<div class="stats-row"><div class="stat-card"><div class="stat-number">'+a.length+'</div><div class="stat-label">Totaal taken</div></div><div class="stat-card"><div class="stat-number" style="color:var(--green)">'+dn+'</div><div class="stat-label">Afgerond</div></div><div class="stat-card"><div class="stat-number" style="color:var(--blue)">'+th.toFixed(1)+'</div><div class="stat-label">Totaal uren</div></div><div class="stat-card"><div class="stat-number" style="color:var(--yellow)">'+M.length+'</div><div class="stat-label">Teamleden</div></div></div><div class="section-title">Voortgang per teamlid</div><div class="member-grid">';
-for(var i=0;i<M.length;i++){var m=M[i],s=gs(m),p=s.n>0?Math.round(s.dn/s.n*100):0,tg="",ce=Object.entries(s.ch).slice(0,3);for(var k=0;k<ce.length;k++)tg+='<span class="cat-tag">'+(CI[ce[k][0]]||"")+" "+ce[k][1].toFixed(1)+"u</span>";h+='<div class="member-card" onclick="st(\''+m.replace(/'/g,"\\'")+"')\"><div class=\"member-card-header\"><span class=\"member-name\">"+esc(m)+"</span><span class=\"member-hours\">"+s.h.toFixed(1)+' uur</span></div><div class="progress-bg"><div class="progress-fill" style="width:'+p+'%"></div></div><div class="member-card-footer"><span>'+s.dn+"/"+s.n+' afgerond</span><span style="color:var(--green);font-weight:600">'+p+"%</span></div>"+(tg?'<div class="cat-tags">'+tg+"</div>":"")+"</div>"}h+="</div>";
-if(a.length>0){a.sort(function(x,y){return new Date(y.createdAt)-new Date(x.createdAt)});h+='<div class="section-title">Recente activiteit</div><div>';for(var i=0;i<Math.min(a.length,10);i++){var e=a[i];h+='<div class="timeline-item"><div class="timeline-dot"></div><div><div class="timeline-header"><span class="timeline-member">'+esc(e.member)+'</span><span class="timeline-date">'+e.date+'</span><span class="status-badge status-'+e.status+'">'+e.status+'</span></div><div class="timeline-desc">'+(CI[e.category]||"")+" "+esc(e.description)+"</div>"+(e.hours?'<div class="timeline-hours">'+e.hours+" uur</div>":"")+"</div></div>"}h+="</div>"}
-document.getElementById("content").innerHTML=h}
+/* === OVERZICHT === */
+function rO(){
+  var a=[],th=0,dn=0;
+  for(var i=0;i<M.length;i++){var it=E[M[i]]||[];for(var j=0;j<it.length;j++){a.push(Object.assign({},it[j],{member:M[i]}));th+=parseFloat(it[j].hours)||0;if(it[j].status==="Afgerond")dn++}}
+  var h='<div class="stats-row"><div class="stat-card"><div class="stat-number">'+a.length+'</div><div class="stat-label">Totaal taken</div></div><div class="stat-card"><div class="stat-number" style="color:var(--green)">'+dn+'</div><div class="stat-label">Afgerond</div></div><div class="stat-card"><div class="stat-number" style="color:var(--blue)">'+th.toFixed(1)+'</div><div class="stat-label">Totaal uren</div></div><div class="stat-card"><div class="stat-number" style="color:var(--yellow)">'+M.length+'</div><div class="stat-label">Teamleden</div></div></div><div class="section-title">Voortgang per teamlid</div><div class="member-grid">';
  
-function rM(m){var it=E[m]||[],th=0;for(var i=0;i<it.length;i++)th+=parseFloat(it[i].hours)||0;var td=new Date().toISOString().split("T")[0],ms=m.replace(/'/g,"\\'"),co="",so="";for(var i=0;i<CL.length;i++)co+="<option>"+CL[i]+"</option>";for(var i=0;i<SL.length;i++)so+="<option"+(SL[i]==="Bezig"?" selected":"")+">"+SL[i]+"</option>";
-var h='<div class="member-header"><div><div class="member-title">'+esc(m)+'</div><div class="member-meta">'+it.length+" activiteiten · "+th.toFixed(1)+' uur totaal</div></div><button class="add-btn" onclick="oF()">+ Activiteit toevoegen</button></div><div class="form-card hidden" id="af"><div class="form-title">Nieuwe activiteit</div><div class="form-grid"><div class="form-group"><label class="label">Datum</label><input type="date" class="input" id="fD" value="'+td+'" onfocus="UB=true"></div><div class="form-group"><label class="label">Categorie</label><select class="input" id="fC" onfocus="UB=true">'+co+'</select></div><div class="form-group"><label class="label">Uren</label><input type="number" step="0.5" min="0" class="input" id="fH" placeholder="bijv. 2.5" onfocus="UB=true"></div><div class="form-group"><label class="label">Status</label><select class="input" id="fS" onfocus="UB=true">'+so+'</select></div></div><div class="form-group"><label class="label">Omschrijving *</label><textarea class="input" id="fO" rows="3" placeholder="Beschrijf wat je hebt gedaan..." onfocus="UB=true"></textarea></div><div class="form-group"><label class="label">Code (optioneel)</label><textarea class="input code-input" id="fK" rows="4" placeholder="Plak hier je code..." onfocus="UB=true"></textarea></div><div class="form-group"><label class="label">Opmerkingen (optioneel)</label><textarea class="input" id="fN" rows="2" placeholder="Extra info..." onfocus="UB=true"></textarea></div><div class="form-group"><label class="label">Foto\'s (optioneel)</label><div class="photo-area" onclick="document.getElementById(\'fP\').click()">📷 Klik om foto\'s toe te voegen<input type="file" id="fP" accept="image/*" multiple onchange="hP(event)" style="display:none"></div><div class="photo-previews" id="pp"></div></div><div style="display:flex;gap:10px"><button class="submit-btn" onclick="sE(\''+ms+'\')" style="flex:1">Opslaan</button><button class="cancel-form-btn" onclick="cF()">Annuleren</button></div></div>';
-if(!it.length)h+='<div class="empty-state"><div style="font-size:48px">📋</div><p>Nog geen activiteiten.<br>Klik op "+ Activiteit toevoegen".</p></div>';
-var sr=it.slice().sort(function(a,b){return new Date(b.date)-new Date(a.date)});for(var i=0;i<sr.length;i++){var e=sr[i],ph="";if(e.photos)for(var p=0;p<e.photos.length;p++)ph+='<img src="'+e.photos[p].data+'" alt="foto">';h+='<div class="entry-card"><div class="entry-header" onclick="tE('+e.id+')"><div class="entry-left"><span class="entry-icon">'+(CI[e.category]||"📌")+'</span><div><div class="entry-title">'+esc(e.description)+'</div><div class="entry-meta">'+e.date+" · "+e.category+" · "+(e.hours||0)+' uur</div></div></div><div class="entry-right"><span class="status-badge status-'+e.status+'">'+e.status+'</span><span id="a-'+e.id+'">▼</span></div></div><div class="entry-body" id="b-'+e.id+'">'+(e.notes?'<div class="entry-notes"><strong>Opmerkingen:</strong> '+esc(e.notes)+'</div>':'')+(e.code?'<div class="code-block"><div class="code-block-header">Code</div><pre class="code-pre">'+esc(e.code)+'</pre></div>':'')+(ph?'<div class="entry-photos">'+ph+'</div>':'')+'<button class="delete-btn" onclick="dE(\''+ms+"',"+e.id+')">🗑️ Verwijderen</button></div></div>'}
-document.getElementById("content").innerHTML=h}
+  for(var i=0;i<M.length;i++){
+    var m=M[i],s=gs(m),p=s.n>0?Math.round(s.dn/s.n*100):0;
+    var tg="",ce=Object.entries(s.ch).slice(0,3);
+    for(var k=0;k<ce.length;k++)tg+='<span class="cat-tag">'+(CI[ce[k][0]]||"")+" "+ce[k][1].toFixed(1)+"u</span>";
+    var on=isOnline(m),act=getActivity(m);
+    var actLabel="";
+    if(on){
+      if(act&&act!=="overzicht")actLabel='<div class="online-label">🟢 Actief op eigen pagina</div>';
+      else actLabel='<div class="online-label">🟢 Online</div>';
+    }
+    h+='<div class="member-card" onclick="switchTab(\''+m.replace(/'/g,"\\'")+'\')">'
+      +'<div class="mc-header"><span class="mc-name">'+(on?'<span class="online-dot"></span>':'')+esc(m)+'</span><span class="mc-hours">'+s.h.toFixed(1)+' uur</span></div>'
+      +'<div class="progress-bg"><div class="progress-fill" style="width:'+p+'%"></div></div>'
+      +'<div class="mc-footer"><span>'+s.dn+'/'+s.n+' afgerond</span><span style="color:var(--green);font-weight:600">'+p+'%</span></div>'
+      +(tg?'<div class="cat-tags">'+tg+'</div>':'')
+      +actLabel+'</div>';
+  }
+  h+='</div>';
  
-function oF(){UB=true;PP=[];var f=document.getElementById("af");if(f)f.classList.remove("hidden")}
-function cF(){UB=false;PP=[];var f=document.getElementById("af");if(f)f.classList.add("hidden")}
+  if(a.length>0){a.sort(function(x,y){return new Date(y.createdAt)-new Date(x.createdAt)});h+='<div class="section-title">Recente activiteit</div><div>';for(var i=0;i<Math.min(a.length,10);i++){var e=a[i];h+='<div class="timeline-item"><div class="timeline-dot"></div><div><div class="timeline-header"><span class="timeline-member">'+esc(e.member)+'</span><span class="timeline-date">'+e.date+'</span><span class="status-badge status-'+e.status+'">'+e.status+'</span></div><div class="timeline-desc">'+(CI[e.category]||"")+" "+esc(e.description)+"</div>"+(e.hours?'<div class="timeline-hours">'+e.hours+" uur</div>":"")+"</div></div>"}h+="</div>"}
+  document.getElementById("content").innerHTML=h;
+}
+ 
+/* === TEAMLID PAGINA === */
+function rM(m){
+  var it=E[m]||[],th=0;for(var i=0;i<it.length;i++)th+=parseFloat(it[i].hours)||0;
+  var ms=m.replace(/'/g,"\\'");
+  var on=isOnline(m),act=getActivity(m);
+  var statusTxt="";
+  if(on){statusTxt=' <span style="color:var(--green);font-size:13px">🟢 Online'+(act&&act===m?' — bezig op eigen pagina':'')+'</span>'}
+ 
+  var h='<div class="mem-header"><div><div class="mem-title">'+esc(m)+statusTxt+'</div>'
+    +'<div class="mem-meta">'+it.length+' activiteiten · '+th.toFixed(1)+' uur totaal</div></div>'
+    +'<button class="add-btn" onclick="openForm(\''+ms+'\')">+ Activiteit toevoegen</button></div>';
+ 
+  if(!it.length&&!formOpen)h+='<div class="empty-state"><div style="font-size:48px">📋</div><p>Nog geen activiteiten.<br>Klik op "+ Activiteit toevoegen".</p></div>';
+ 
+  var sr=it.slice().sort(function(a,b){return new Date(b.date)-new Date(a.date)});
+  for(var i=0;i<sr.length;i++){var e=sr[i],ph="";if(e.photos)for(var p=0;p<e.photos.length;p++)ph+='<img src="'+e.photos[p].data+'" alt="foto">';
+    h+='<div class="entry-card"><div class="entry-header" onclick="tE('+e.id+')"><div class="entry-left"><span class="entry-icon">'+(CI[e.category]||"📌")+'</span><div><div class="entry-title">'+esc(e.description)+'</div><div class="entry-meta">'+e.date+' · '+e.category+' · '+(e.hours||0)+' uur</div></div></div><div class="entry-right"><span class="status-badge status-'+e.status+'">'+e.status+'</span><span id="a-'+e.id+'">▼</span></div></div><div class="entry-body" id="b-'+e.id+'">'+(e.notes?'<div class="entry-notes"><strong>Opmerkingen:</strong> '+esc(e.notes)+'</div>':'')+(e.code?'<div class="code-block"><div class="code-block-header">Code</div><pre class="code-pre">'+esc(e.code)+'</pre></div>':'')+(ph?'<div class="entry-photos">'+ph+'</div>':'')+'<button class="delete-btn" onclick="dE(\''+ms+"',"+e.id+')">🗑️ Verwijderen</button></div></div>'}
+  document.getElementById("content").innerHTML=h;
+}
+ 
+/* === FORMULIER — staat BUITEN content, wordt nooit verwijderd === */
+function openForm(m){
+  formOpen=true;formMember=m;PP=[];
+  document.getElementById("fD").value=new Date().toISOString().split("T")[0];
+  document.getElementById("fO").value="";
+  document.getElementById("fK").value="";
+  document.getElementById("fN").value="";
+  document.getElementById("fH").value="";
+  document.getElementById("fC").selectedIndex=0;
+  document.getElementById("fS").selectedIndex=1;
+  document.getElementById("pp").innerHTML="";
+  document.getElementById("formWrap").classList.remove("hidden");
+  document.getElementById("fO").focus();
+}
+ 
+function closeForm(){
+  formOpen=false;formMember="";PP=[];
+  document.getElementById("formWrap").classList.add("hidden");
+}
+ 
 function hP(ev){for(var i=0;i<ev.target.files.length;i++){(function(f){var r=new FileReader();r.onload=function(e){PP.push({name:f.name,data:e.target.result});rPP()};r.readAsDataURL(f)})(ev.target.files[i])}}
 function rPP(){var c=document.getElementById("pp");if(!c)return;var h="";for(var i=0;i<PP.length;i++)h+='<div class="photo-preview"><img src="'+PP[i].data+'"><button class="photo-remove" onclick="PP.splice('+i+',1);rPP()">✕</button></div>';c.innerHTML=h}
  
-function sE(m){var d=document.getElementById("fO").value.trim();if(!d)return;if(!E[m])E[m]=[];E[m].push({id:Date.now(),createdAt:new Date().toISOString(),date:document.getElementById("fD").value,category:document.getElementById("fC").value,description:d,code:document.getElementById("fK").value,hours:document.getElementById("fH").value,status:document.getElementById("fS").value,notes:document.getElementById("fN").value,photos:PP.slice()});PP=[];UB=false;rT();rM(m);toast("Activiteit opgeslagen!");dbSave()}
+function submitE(){
+  var d=document.getElementById("fO").value.trim();if(!d||!formMember)return;
+  if(!E[formMember])E[formMember]=[];
+  E[formMember].push({id:Date.now(),createdAt:new Date().toISOString(),date:document.getElementById("fD").value,category:document.getElementById("fC").value,description:d,code:document.getElementById("fK").value,hours:document.getElementById("fH").value,status:document.getElementById("fS").value,notes:document.getElementById("fN").value,photos:PP.slice()});
+  var m=formMember;
+  closeForm();
+  rT();rM(m);
+  toast("Activiteit opgeslagen!");
+  dbSave();
+}
  
 function dE(m,id){if(!confirm("Verwijderen?"))return;E[m]=(E[m]||[]).filter(function(e){return e.id!==id});rT();rC();dbSave()}
 function tE(id){var b=document.getElementById("b-"+id),a=document.getElementById("a-"+id);if(b){b.classList.toggle("open");a.textContent=b.classList.contains("open")?"▲":"▼"}}
  
-function openNE(){UB=true;document.getElementById("ni").value=M.join("\n");document.getElementById("nm").classList.remove("hidden")}
-function closeNE(){UB=false;document.getElementById("nm").classList.add("hidden")}
-function saveN(){var n=document.getElementById("ni").value.split("\n").map(function(s){return s.trim()}).filter(Boolean);if(!n.length)return;var ne={};for(var i=0;i<n.length;i++){var o=M[i];if(o&&E[o])ne[n[i]]=E[o]}M=n;E=ne;if(AT!=="overzicht"&&n.indexOf(AT)===-1)AT="overzicht";UB=false;closeNE();rT();rC();dbSave();toast("Namen opgeslagen!")}
+/* === NAMEN === */
+function openNE(){document.getElementById("ni").value=M.join("\n");document.getElementById("nm").classList.remove("hidden")}
+function closeNE(){document.getElementById("nm").classList.add("hidden")}
+function saveN(){var n=document.getElementById("ni").value.split("\n").map(function(s){return s.trim()}).filter(Boolean);if(!n.length)return;var ne={};for(var i=0;i<n.length;i++){var o=M[i];if(o&&E[o])ne[n[i]]=E[o]}M=n;E=ne;if(AT!=="overzicht"&&n.indexOf(AT)===-1)AT="overzicht";closeNE();rT();rC();dbSave();toast("Namen opgeslagen! Herlaad de pagina om de namenlijst bij te werken.")}
  
+/* === EXCEL === */
 function exportXL(){var wb=XLSX.utils.book_new(),ar=[["Datum","Teamlid","Categorie","Omschrijving","Uren","Status","Code","Opmerkingen"]];for(var i=0;i<M.length;i++){var it=(E[M[i]]||[]).slice().sort(function(a,b){return new Date(a.date)-new Date(b.date)});for(var j=0;j<it.length;j++){var e=it[j];ar.push([e.date,M[i],e.category,e.description||"",parseFloat(e.hours)||0,e.status,e.code||"",e.notes||""])}}var ws=XLSX.utils.aoa_to_sheet(ar);ws["!cols"]=[{wch:12},{wch:18},{wch:22},{wch:50},{wch:8},{wch:14},{wch:40},{wch:30}];XLSX.utils.book_append_sheet(wb,ws,"Alle activiteiten");var ov=[["Teamlid","Totaal uren","Taken","Afgerond","Bezig","Gepland","Geblokkeerd"]];for(var i=0;i<M.length;i++){var it=E[M[i]]||[],h=0,a=0,b=0,g=0,bl=0;for(var j=0;j<it.length;j++){h+=parseFloat(it[j].hours)||0;if(it[j].status==="Afgerond")a++;if(it[j].status==="Bezig")b++;if(it[j].status==="Gepland")g++;if(it[j].status==="Geblokkeerd")bl++}ov.push([M[i],h,it.length,a,b,g,bl])}XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ov),"Overzicht");for(var i=0;i<M.length;i++){var rw=[["Datum","Categorie","Omschrijving","Uren","Status","Code","Opmerkingen"]],it=(E[M[i]]||[]).slice().sort(function(a,b){return new Date(a.date)-new Date(b.date)});for(var j=0;j<it.length;j++){var e=it[j];rw.push([e.date,e.category,e.description||"",parseFloat(e.hours)||0,e.status,e.code||"",e.notes||""])}var s=XLSX.utils.aoa_to_sheet(rw);s["!cols"]=[{wch:12},{wch:22},{wch:50},{wch:8},{wch:14},{wch:40},{wch:30}];XLSX.utils.book_append_sheet(wb,s,M[i].substring(0,31))}XLSX.writeFile(wb,"Robotica_Logboek.xlsx");toast("Excel gedownload!")}
  
-rT();rC();dbLoad(function(){rT();rC()});
+/* === START === */
+initForm();
+dbLoad(function(){
+  // Check of gebruiker al eerder een naam had gekozen
+  var saved=localStorage.getItem("rb-user");
+  if(saved&&M.indexOf(saved)!==-1){
+    selectUser(saved);
+  }else{
+    showUserSelect();
+  }
+});
 </script>
 </body>
 </html>
