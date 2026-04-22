@@ -94,6 +94,7 @@ textarea.input{resize:vertical}
 .entry-photos{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
 .entry-photos img{max-width:250px;max-height:200px;border-radius:8px;border:1px solid var(--border)}
 .delete-btn{background:transparent;border:1px solid var(--red);color:var(--red);padding:6px 16px;border-radius:8px;cursor:pointer;font-size:13px;margin-top:14px;font-family:var(--font)}
+.edit-btn{background:transparent;border:1px solid var(--blue);color:var(--blue2);padding:6px 16px;border-radius:8px;cursor:pointer;font-size:13px;margin-top:14px;font-family:var(--font);margin-right:8px}
 .empty-state{text-align:center;padding:60px 20px;color:var(--text3)}
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px}
 .modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:440px;width:100%}
@@ -178,7 +179,7 @@ var myName="";
 var presence={};
 var formOpen=false;
 var formMember="";
-var editId = null; // NIEUW: houdt bij of we aan het bewerken zijn
+var currentEditId=null; // Nieuw: om bij te houden welk item we bewerken
  
 function esc(s){var d=document.createElement("div");d.textContent=s||"";return d.innerHTML}
 function toast(m){var t=document.getElementById("toast");t.textContent=m;t.classList.add("show");setTimeout(function(){t.classList.remove("show")},4000)}
@@ -263,10 +264,8 @@ function selectUser(name){
   rT();rC();
 }
  
-/* === STATS === */
 function gs(m){var it=E[m]||[],h=0,dn=0,ch={};for(var i=0;i<it.length;i++){h+=parseFloat(it[i].hours)||0;if(it[i].status==="Afgerond")dn++;var c=it[i].category;ch[c]=(ch[c]||0)+(parseFloat(it[i].hours)||0)}return{n:it.length,h:h,dn:dn,ch:ch}}
  
-/* === TABS === */
 function switchTab(t){AT=t;formOpen=false;document.getElementById("formWrap").classList.add("hidden");rT();rC();updatePresence()}
  
 function rT(){
@@ -280,7 +279,6 @@ function rT(){
  
 function rC(){if(AT==="overzicht")rO();else rM(AT)}
  
-/* === OVERZICHT === */
 function rO(){
   var a=[],th=0,dn=0;
   for(var i=0;i<M.length;i++){var it=E[M[i]]||[];for(var j=0;j<it.length;j++){a.push(Object.assign({},it[j],{member:M[i]}));th+=parseFloat(it[j].hours)||0;if(it[j].status==="Afgerond")dn++}}
@@ -309,7 +307,6 @@ function rO(){
   document.getElementById("content").innerHTML=h;
 }
  
-/* === TEAMLID PAGINA === */
 function rM(m){
   var it=E[m]||[],th=0;for(var i=0;i<it.length;i++)th+=parseFloat(it[i].hours)||0;
   var ms=m.replace(/'/g,"\\'");
@@ -324,59 +321,53 @@ function rM(m){
   if(!it.length&&!formOpen)h+='<div class="empty-state"><div style="font-size:48px">📋</div><p>Nog geen activiteiten.<br>Klik op "+ Activiteit toevoegen".</p></div>';
  
   var sr=it.slice().sort(function(a,b){return new Date(b.date)-new Date(a.date)});
-  for(var i=0;i<sr.length;i++){
-    var e=sr[i],ph="";
-    if(e.photos)for(var p=0;p<e.photos.length;p++)ph+='<img src="'+e.photos[p].data+'" alt="foto">';
-    
-    h+='<div class="entry-card"><div class="entry-header" onclick="tE('+e.id+')"><div class="entry-left"><span class="entry-icon">'+(CI[e.category]||"📌")+'</span><div><div class="entry-title">'+esc(e.description)+'</div><div class="entry-meta">'+e.date+' · '+e.category+' · '+(e.hours||0)+' uur</div></div></div><div class="entry-right"><span class="status-badge status-'+e.status+'">'+e.status+'</span><span id="a-'+e.id+'">▼</span></div></div><div class="entry-body" id="b-'+e.id+'">'+(e.notes?'<div class="entry-notes"><strong>Opmerkingen:</strong> '+esc(e.notes)+'</div>':'')+(e.code?'<div class="code-block"><div class="code-block-header">Code</div><pre class="code-pre">'+esc(e.code)+'</pre></div>':'')+(ph?'<div class="entry-photos">'+ph+'</div>':'')
-    +'<div style="display:flex;gap:8px;margin-top:14px;">'
-      +'<button class="hbtn" style="border-color:var(--blue);color:var(--blue2)" onclick="openForm(\''+ms+'\','+e.id+')">✏️ Bewerken</button>'
-      +'<button class="delete-btn" style="margin-top:0" onclick="dE(\''+ms+"',"+e.id+')">🗑️ Verwijderen</button>'
-    +'</div>'
-    +'</div></div>'
-  }
+  for(var i=0;i<sr.length;i++){var e=sr[i],ph="";if(e.photos)for(var p=0;p<e.photos.length;p++)ph+='<img src="'+e.photos[p].data+'" alt="foto">';
+    h+='<div class="entry-card"><div class="entry-header" onclick="tE('+e.id+')"><div class="entry-left"><span class="entry-icon">'+(CI[e.category]||"📌")+'</span><div><div class="entry-title">'+esc(e.description)+'</div><div class="entry-meta">'+e.date+' · '+e.category+' · '+(e.hours||0)+' uur</div></div></div><div class="entry-right"><span class="status-badge status-'+e.status+'">'+e.status+'</span><span id="a-'+e.id+'">▼</span></div></div><div class="entry-body" id="b-'+e.id+'">'+(e.notes?'<div class="entry-notes"><strong>Opmerkingen:</strong> '+esc(e.notes)+'</div>':'')+(e.code?'<div class="code-block"><div class="code-block-header">Code</div><pre class="code-pre">'+esc(e.code)+'</pre></div>':'')+(ph?'<div class="entry-photos">'+ph+'</div>':'')+'<div style="display:flex;margin-top:10px"><button class="edit-btn" onclick="editE(\''+ms+"',"+e.id+')">✏️ Bewerken</button><button class="delete-btn" onclick="dE(\''+ms+"',"+e.id+')">🗑️ Verwijderen</button></div></div></div>'}
   document.getElementById("content").innerHTML=h;
 }
  
-/* === FORMULIER LOGICA (MET BEWERKEN) === */
-function openForm(m, id = null){
-  formOpen = true; 
-  formMember = m; 
-  editId = id; 
-  PP = [];
-  
-  var title = document.getElementById('formTitle');
-  
-  if(id) {
-    title.textContent = "Activiteit bewerken";
-    var entry = E[m].find(e => e.id === id);
-    document.getElementById("fD").value = entry.date;
-    document.getElementById("fO").value = entry.description;
-    document.getElementById("fK").value = entry.code || "";
-    document.getElementById("fN").value = entry.notes || "";
-    document.getElementById("fH").value = entry.hours || "";
-    document.getElementById("fC").value = entry.category;
-    document.getElementById("fS").value = entry.status;
-    PP = entry.photos ? JSON.parse(JSON.stringify(entry.photos)) : [];
-    rPP();
-  } else {
-    title.textContent = "Nieuwe activiteit";
-    document.getElementById("fD").value = new Date().toISOString().split("T")[0];
-    document.getElementById("fO").value = "";
-    document.getElementById("fK").value = "";
-    document.getElementById("fN").value = "";
-    document.getElementById("fH").value = "";
-    document.getElementById("fC").selectedIndex = 0;
-    document.getElementById("fS").selectedIndex = 1;
-    document.getElementById("pp").innerHTML = "";
-  }
-  
+/* === FORMULIER MET BEWERK-FUNCTIE === */
+function openForm(m){
+  formOpen=true;formMember=m;currentEditId=null;PP=[];
+  document.getElementById("formTitle").textContent = "Nieuwe activiteit";
+  document.getElementById("fD").value=new Date().toISOString().split("T")[0];
+  document.getElementById("fO").value="";
+  document.getElementById("fK").value="";
+  document.getElementById("fN").value="";
+  document.getElementById("fH").value="";
+  document.getElementById("fC").selectedIndex=0;
+  document.getElementById("fS").selectedIndex=1;
+  document.getElementById("pp").innerHTML="";
   document.getElementById("formWrap").classList.remove("hidden");
   document.getElementById("fO").focus();
 }
+
+function editE(m, id) {
+  var entries = E[m] || [];
+  var e = entries.find(function(item) { return item.id === id; });
+  if (!e) return;
+
+  formOpen = true;
+  formMember = m;
+  currentEditId = id;
+  PP = e.photos ? e.photos.slice() : [];
+
+  document.getElementById("formTitle").textContent = "Activiteit bewerken";
+  document.getElementById("fD").value = e.date;
+  document.getElementById("fO").value = e.description;
+  document.getElementById("fK").value = e.code || "";
+  document.getElementById("fN").value = e.notes || "";
+  document.getElementById("fH").value = e.hours || "";
+  document.getElementById("fC").value = e.category;
+  document.getElementById("fS").value = e.status;
+  rPP();
+
+  document.getElementById("formWrap").classList.remove("hidden");
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
  
 function closeForm(){
-  formOpen=false;formMember="";editId=null;PP=[];
+  formOpen=false;formMember="";currentEditId=null;PP=[];
   document.getElementById("formWrap").classList.add("hidden");
 }
  
@@ -384,14 +375,12 @@ function hP(ev){for(var i=0;i<ev.target.files.length;i++){(function(f){var r=new
 function rPP(){var c=document.getElementById("pp");if(!c)return;var h="";for(var i=0;i<PP.length;i++)h+='<div class="photo-preview"><img src="'+PP[i].data+'"><button class="photo-remove" onclick="PP.splice('+i+',1);rPP()">✕</button></div>';c.innerHTML=h}
  
 function submitE(){
-  var d = document.getElementById("fO").value.trim(); 
-  if(!d || !formMember) return;
-  
-  if(!E[formMember]) E[formMember] = [];
+  var d=document.getElementById("fO").value.trim();if(!d||!formMember)return;
+  if(!E[formMember])E[formMember]=[];
 
   var entryData = {
-    id: editId || Date.now(), 
-    createdAt: editId ? (E[formMember].find(e => e.id === editId).createdAt) : new Date().toISOString(),
+    id: currentEditId || Date.now(),
+    createdAt: currentEditId ? (E[formMember].find(e => e.id === currentEditId).createdAt) : new Date().toISOString(),
     date: document.getElementById("fD").value,
     category: document.getElementById("fC").value,
     description: d,
@@ -402,32 +391,29 @@ function submitE(){
     photos: PP.slice()
   };
 
-  if(editId) {
-    var idx = E[formMember].findIndex(e => e.id === editId);
-    E[formMember][idx] = entryData;
+  if (currentEditId) {
+    var idx = E[formMember].findIndex(e => e.id === currentEditId);
+    if (idx !== -1) E[formMember][idx] = entryData;
   } else {
     E[formMember].push(entryData);
   }
 
-  var m = formMember;
+  var m=formMember;
   closeForm();
-  rT(); rM(m);
-  toast(editId ? "Activiteit bijgewerkt!" : "Activiteit opgeslagen!");
+  rT();rM(m);
+  toast(currentEditId ? "Activiteit bijgewerkt!" : "Activiteit opgeslagen!");
   dbSave();
 }
  
 function dE(m,id){if(!confirm("Verwijderen?"))return;E[m]=(E[m]||[]).filter(function(e){return e.id!==id});rT();rC();dbSave()}
 function tE(id){var b=document.getElementById("b-"+id),a=document.getElementById("a-"+id);if(b){b.classList.toggle("open");a.textContent=b.classList.contains("open")?"▲":"▼"}}
  
-/* === NAMEN === */
 function openNE(){document.getElementById("ni").value=M.join("\n");document.getElementById("nm").classList.remove("hidden")}
 function closeNE(){document.getElementById("nm").classList.add("hidden")}
 function saveN(){var n=document.getElementById("ni").value.split("\n").map(function(s){return s.trim()}).filter(Boolean);if(!n.length)return;var ne={};for(var i=0;i<n.length;i++){var o=M[i];if(o&&E[o])ne[n[i]]=E[o]}M=n;E=ne;if(AT!=="overzicht"&&n.indexOf(AT)===-1)AT="overzicht";closeNE();rT();rC();dbSave();toast("Namen opgeslagen!")}
  
-/* === EXCEL === */
 function exportXL(){var wb=XLSX.utils.book_new(),ar=[["Datum","Teamlid","Categorie","Omschrijving","Uren","Status","Code","Opmerkingen"]];for(var i=0;i<M.length;i++){var it=(E[M[i]]||[]).slice().sort(function(a,b){return new Date(a.date)-new Date(b.date)});for(var j=0;j<it.length;j++){var e=it[j];ar.push([e.date,M[i],e.category,e.description||"",parseFloat(e.hours)||0,e.status,e.code||"",e.notes||""])}}var ws=XLSX.utils.aoa_to_sheet(ar);ws["!cols"]=[{wch:12},{wch:18},{wch:22},{wch:50},{wch:8},{wch:14},{wch:40},{wch:30}];XLSX.utils.book_append_sheet(wb,ws,"Alle activiteiten");var ov=[["Teamlid","Totaal uren","Taken","Afgerond","Bezig","Gepland","Geblokkeerd"]];for(var i=0;i<M.length;i++){var it=E[M[i]]||[],h=0,a=0,b=0,g=0,bl=0;for(var j=0;j<it.length;j++){h+=parseFloat(it[j].hours)||0;if(it[j].status==="Afgerond")a++;if(it[j].status==="Bezig")b++;if(it[j].status==="Gepland")g++;if(it[j].status==="Geblokkeerd")bl++}ov.push([M[i],h,it.length,a,b,g,bl])}XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ov),"Overzicht");for(var i=0;i<M.length;i++){var rw=[["Datum","Categorie","Omschrijving","Uren","Status","Code","Opmerkingen"]],it=(E[M[i]]||[]).slice().sort(function(a,b){return new Date(a.date)-new Date(b.date)});for(var j=0;j<it.length;j++){var e=it[j];rw.push([e.date,e.category,e.description||"",parseFloat(e.hours)||0,e.status,e.code||"",e.notes||""])}var s=XLSX.utils.aoa_to_sheet(rw);s["!cols"]=[{wch:12},{wch:22},{wch:50},{wch:8},{wch:14},{wch:40},{wch:30}];XLSX.utils.book_append_sheet(wb,s,M[i].substring(0,31))}XLSX.writeFile(wb,"Robotica_Logboek.xlsx");toast("Excel gedownload!")}
  
-/* === START === */
 initForm();
 dbLoad(function(){
   var saved=localStorage.getItem("rb-user");
