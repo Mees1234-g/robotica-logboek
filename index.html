@@ -112,14 +112,12 @@ textarea.input{resize:vertical}
 </head>
 <body>
  
-<!-- STAP 1: Kies wie je bent -->
 <div id="userSelect" class="user-select">
   <h2>Wie ben je?</h2>
   <p style="color:var(--text3);margin-bottom:20px;font-size:13px">Kies je naam zodat we kunnen zien wie er actief is</p>
   <div id="userButtons"></div>
 </div>
  
-<!-- STAP 2: De app -->
 <div class="hidden" id="app">
 <div class="header">
   <div class="header-left"><div class="logo">⚙️</div><div><h1>Robotica Logboek</h1><p>Ontwerpen 4 — Werkzaamheden Tracker</p></div></div>
@@ -135,10 +133,9 @@ textarea.input{resize:vertical}
 <div class="toast" id="toast"></div>
 <div class="tab-bar" id="tabBar"></div>
  
-<!-- Formulier staat BUITEN content, wordt nooit verwijderd door re-render -->
 <div class="hidden" id="formWrap" style="padding:0 24px;max-width:1100px;margin:0 auto">
   <div class="form-card" style="margin-top:24px">
-    <div class="form-title">Nieuwe activiteit</div>
+    <div class="form-title" id="formTitle">Nieuwe activiteit</div>
     <div class="form-grid">
       <div class="form-group"><label class="label">Datum</label><input type="date" class="input" id="fD"></div>
       <div class="form-group"><label class="label">Categorie</label><select class="input" id="fC"></select></div>
@@ -181,12 +178,12 @@ var myName="";
 var presence={};
 var formOpen=false;
 var formMember="";
+var editId = null; // NIEUW: houdt bij of we aan het bewerken zijn
  
 function esc(s){var d=document.createElement("div");d.textContent=s||"";return d.innerHTML}
 function toast(m){var t=document.getElementById("toast");t.textContent=m;t.classList.add("show");setTimeout(function(){t.classList.remove("show")},4000)}
 function setSync(ok){document.getElementById("ss").className="sync-status "+(ok?"sync-ok":"sync-err");document.getElementById("st").textContent=ok?"Live verbonden":"Offline"}
  
-// Vul de categorie en status dropdowns in (eenmalig)
 function initForm(){
   var cs=document.getElementById("fC"),ss=document.getElementById("fS");
   cs.innerHTML="";ss.innerHTML="";
@@ -211,7 +208,6 @@ function dbLoad(cb){
   x.onerror=x.ontimeout=function(){setSync(false)};x.send();
 }
  
-// Stille refresh — update data + presence maar NOOIT het formulier
 function bgRefresh(){
   var x=new XMLHttpRequest();x.open("GET",DB+"/.json",true);x.timeout=5000;
   x.onload=function(){if(x.status===200){try{var d=JSON.parse(x.responseText);if(d){
@@ -219,21 +215,16 @@ function bgRefresh(){
     var changed=JSON.stringify({m:M,e:E})!==JSON.stringify({m:nM,e:nE});
     var presChanged=JSON.stringify(presence)!==JSON.stringify(nP);
     M=nM;E=nE;presence=nP;
-    // Altijd tabs updaten (voor badges)
     rT();
-    // Content alleen updaten als formulier NIET open is
     if(!formOpen&&(changed||presChanged))rC();
-    // Als formulier WEL open is maar presence veranderd, update alleen presence-indicator
   }setSync(true)}catch(e){}}};
   x.onerror=x.ontimeout=function(){};x.send();
 }
 setInterval(bgRefresh,10000);
  
-// Presence updaten: schrijf mijn naam + huidige tab
 function updatePresence(){
   if(!myName)return;
   presence[myName]={tab:AT,ts:Date.now()};
-  // Schrijf alleen presence, niet alles
   var x=new XMLHttpRequest();x.open("PUT",DB+"/presence.json",true);
   x.setRequestHeader("Content-Type","application/json");x.timeout=3000;
   x.send(JSON.stringify(presence));
@@ -242,7 +233,7 @@ setInterval(updatePresence,8000);
  
 function isOnline(name){
   if(!presence[name])return false;
-  return(Date.now()-presence[name].ts)<30000; // actief in laatste 30 sec
+  return(Date.now()-presence[name].ts)<30000;
 }
 function getActivity(name){
   if(!presence[name]||!isOnline(name))return null;
@@ -333,28 +324,59 @@ function rM(m){
   if(!it.length&&!formOpen)h+='<div class="empty-state"><div style="font-size:48px">📋</div><p>Nog geen activiteiten.<br>Klik op "+ Activiteit toevoegen".</p></div>';
  
   var sr=it.slice().sort(function(a,b){return new Date(b.date)-new Date(a.date)});
-  for(var i=0;i<sr.length;i++){var e=sr[i],ph="";if(e.photos)for(var p=0;p<e.photos.length;p++)ph+='<img src="'+e.photos[p].data+'" alt="foto">';
-    h+='<div class="entry-card"><div class="entry-header" onclick="tE('+e.id+')"><div class="entry-left"><span class="entry-icon">'+(CI[e.category]||"📌")+'</span><div><div class="entry-title">'+esc(e.description)+'</div><div class="entry-meta">'+e.date+' · '+e.category+' · '+(e.hours||0)+' uur</div></div></div><div class="entry-right"><span class="status-badge status-'+e.status+'">'+e.status+'</span><span id="a-'+e.id+'">▼</span></div></div><div class="entry-body" id="b-'+e.id+'">'+(e.notes?'<div class="entry-notes"><strong>Opmerkingen:</strong> '+esc(e.notes)+'</div>':'')+(e.code?'<div class="code-block"><div class="code-block-header">Code</div><pre class="code-pre">'+esc(e.code)+'</pre></div>':'')+(ph?'<div class="entry-photos">'+ph+'</div>':'')+'<button class="delete-btn" onclick="dE(\''+ms+"',"+e.id+')">🗑️ Verwijderen</button></div></div>'}
+  for(var i=0;i<sr.length;i++){
+    var e=sr[i],ph="";
+    if(e.photos)for(var p=0;p<e.photos.length;p++)ph+='<img src="'+e.photos[p].data+'" alt="foto">';
+    
+    h+='<div class="entry-card"><div class="entry-header" onclick="tE('+e.id+')"><div class="entry-left"><span class="entry-icon">'+(CI[e.category]||"📌")+'</span><div><div class="entry-title">'+esc(e.description)+'</div><div class="entry-meta">'+e.date+' · '+e.category+' · '+(e.hours||0)+' uur</div></div></div><div class="entry-right"><span class="status-badge status-'+e.status+'">'+e.status+'</span><span id="a-'+e.id+'">▼</span></div></div><div class="entry-body" id="b-'+e.id+'">'+(e.notes?'<div class="entry-notes"><strong>Opmerkingen:</strong> '+esc(e.notes)+'</div>':'')+(e.code?'<div class="code-block"><div class="code-block-header">Code</div><pre class="code-pre">'+esc(e.code)+'</pre></div>':'')+(ph?'<div class="entry-photos">'+ph+'</div>':'')
+    +'<div style="display:flex;gap:8px;margin-top:14px;">'
+      +'<button class="hbtn" style="border-color:var(--blue);color:var(--blue2)" onclick="openForm(\''+ms+'\','+e.id+')">✏️ Bewerken</button>'
+      +'<button class="delete-btn" style="margin-top:0" onclick="dE(\''+ms+"',"+e.id+')">🗑️ Verwijderen</button>'
+    +'</div>'
+    +'</div></div>'
+  }
   document.getElementById("content").innerHTML=h;
 }
  
-/* === FORMULIER — staat BUITEN content, wordt nooit verwijderd === */
-function openForm(m){
-  formOpen=true;formMember=m;PP=[];
-  document.getElementById("fD").value=new Date().toISOString().split("T")[0];
-  document.getElementById("fO").value="";
-  document.getElementById("fK").value="";
-  document.getElementById("fN").value="";
-  document.getElementById("fH").value="";
-  document.getElementById("fC").selectedIndex=0;
-  document.getElementById("fS").selectedIndex=1;
-  document.getElementById("pp").innerHTML="";
+/* === FORMULIER LOGICA (MET BEWERKEN) === */
+function openForm(m, id = null){
+  formOpen = true; 
+  formMember = m; 
+  editId = id; 
+  PP = [];
+  
+  var title = document.getElementById('formTitle');
+  
+  if(id) {
+    title.textContent = "Activiteit bewerken";
+    var entry = E[m].find(e => e.id === id);
+    document.getElementById("fD").value = entry.date;
+    document.getElementById("fO").value = entry.description;
+    document.getElementById("fK").value = entry.code || "";
+    document.getElementById("fN").value = entry.notes || "";
+    document.getElementById("fH").value = entry.hours || "";
+    document.getElementById("fC").value = entry.category;
+    document.getElementById("fS").value = entry.status;
+    PP = entry.photos ? JSON.parse(JSON.stringify(entry.photos)) : [];
+    rPP();
+  } else {
+    title.textContent = "Nieuwe activiteit";
+    document.getElementById("fD").value = new Date().toISOString().split("T")[0];
+    document.getElementById("fO").value = "";
+    document.getElementById("fK").value = "";
+    document.getElementById("fN").value = "";
+    document.getElementById("fH").value = "";
+    document.getElementById("fC").selectedIndex = 0;
+    document.getElementById("fS").selectedIndex = 1;
+    document.getElementById("pp").innerHTML = "";
+  }
+  
   document.getElementById("formWrap").classList.remove("hidden");
   document.getElementById("fO").focus();
 }
  
 function closeForm(){
-  formOpen=false;formMember="";PP=[];
+  formOpen=false;formMember="";editId=null;PP=[];
   document.getElementById("formWrap").classList.add("hidden");
 }
  
@@ -362,13 +384,35 @@ function hP(ev){for(var i=0;i<ev.target.files.length;i++){(function(f){var r=new
 function rPP(){var c=document.getElementById("pp");if(!c)return;var h="";for(var i=0;i<PP.length;i++)h+='<div class="photo-preview"><img src="'+PP[i].data+'"><button class="photo-remove" onclick="PP.splice('+i+',1);rPP()">✕</button></div>';c.innerHTML=h}
  
 function submitE(){
-  var d=document.getElementById("fO").value.trim();if(!d||!formMember)return;
-  if(!E[formMember])E[formMember]=[];
-  E[formMember].push({id:Date.now(),createdAt:new Date().toISOString(),date:document.getElementById("fD").value,category:document.getElementById("fC").value,description:d,code:document.getElementById("fK").value,hours:document.getElementById("fH").value,status:document.getElementById("fS").value,notes:document.getElementById("fN").value,photos:PP.slice()});
-  var m=formMember;
+  var d = document.getElementById("fO").value.trim(); 
+  if(!d || !formMember) return;
+  
+  if(!E[formMember]) E[formMember] = [];
+
+  var entryData = {
+    id: editId || Date.now(), 
+    createdAt: editId ? (E[formMember].find(e => e.id === editId).createdAt) : new Date().toISOString(),
+    date: document.getElementById("fD").value,
+    category: document.getElementById("fC").value,
+    description: d,
+    code: document.getElementById("fK").value,
+    hours: document.getElementById("fH").value,
+    status: document.getElementById("fS").value,
+    notes: document.getElementById("fN").value,
+    photos: PP.slice()
+  };
+
+  if(editId) {
+    var idx = E[formMember].findIndex(e => e.id === editId);
+    E[formMember][idx] = entryData;
+  } else {
+    E[formMember].push(entryData);
+  }
+
+  var m = formMember;
   closeForm();
-  rT();rM(m);
-  toast("Activiteit opgeslagen!");
+  rT(); rM(m);
+  toast(editId ? "Activiteit bijgewerkt!" : "Activiteit opgeslagen!");
   dbSave();
 }
  
@@ -378,7 +422,7 @@ function tE(id){var b=document.getElementById("b-"+id),a=document.getElementById
 /* === NAMEN === */
 function openNE(){document.getElementById("ni").value=M.join("\n");document.getElementById("nm").classList.remove("hidden")}
 function closeNE(){document.getElementById("nm").classList.add("hidden")}
-function saveN(){var n=document.getElementById("ni").value.split("\n").map(function(s){return s.trim()}).filter(Boolean);if(!n.length)return;var ne={};for(var i=0;i<n.length;i++){var o=M[i];if(o&&E[o])ne[n[i]]=E[o]}M=n;E=ne;if(AT!=="overzicht"&&n.indexOf(AT)===-1)AT="overzicht";closeNE();rT();rC();dbSave();toast("Namen opgeslagen! Herlaad de pagina om de namenlijst bij te werken.")}
+function saveN(){var n=document.getElementById("ni").value.split("\n").map(function(s){return s.trim()}).filter(Boolean);if(!n.length)return;var ne={};for(var i=0;i<n.length;i++){var o=M[i];if(o&&E[o])ne[n[i]]=E[o]}M=n;E=ne;if(AT!=="overzicht"&&n.indexOf(AT)===-1)AT="overzicht";closeNE();rT();rC();dbSave();toast("Namen opgeslagen!")}
  
 /* === EXCEL === */
 function exportXL(){var wb=XLSX.utils.book_new(),ar=[["Datum","Teamlid","Categorie","Omschrijving","Uren","Status","Code","Opmerkingen"]];for(var i=0;i<M.length;i++){var it=(E[M[i]]||[]).slice().sort(function(a,b){return new Date(a.date)-new Date(b.date)});for(var j=0;j<it.length;j++){var e=it[j];ar.push([e.date,M[i],e.category,e.description||"",parseFloat(e.hours)||0,e.status,e.code||"",e.notes||""])}}var ws=XLSX.utils.aoa_to_sheet(ar);ws["!cols"]=[{wch:12},{wch:18},{wch:22},{wch:50},{wch:8},{wch:14},{wch:40},{wch:30}];XLSX.utils.book_append_sheet(wb,ws,"Alle activiteiten");var ov=[["Teamlid","Totaal uren","Taken","Afgerond","Bezig","Gepland","Geblokkeerd"]];for(var i=0;i<M.length;i++){var it=E[M[i]]||[],h=0,a=0,b=0,g=0,bl=0;for(var j=0;j<it.length;j++){h+=parseFloat(it[j].hours)||0;if(it[j].status==="Afgerond")a++;if(it[j].status==="Bezig")b++;if(it[j].status==="Gepland")g++;if(it[j].status==="Geblokkeerd")bl++}ov.push([M[i],h,it.length,a,b,g,bl])}XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ov),"Overzicht");for(var i=0;i<M.length;i++){var rw=[["Datum","Categorie","Omschrijving","Uren","Status","Code","Opmerkingen"]],it=(E[M[i]]||[]).slice().sort(function(a,b){return new Date(a.date)-new Date(b.date)});for(var j=0;j<it.length;j++){var e=it[j];rw.push([e.date,e.category,e.description||"",parseFloat(e.hours)||0,e.status,e.code||"",e.notes||""])}var s=XLSX.utils.aoa_to_sheet(rw);s["!cols"]=[{wch:12},{wch:22},{wch:50},{wch:8},{wch:14},{wch:40},{wch:30}];XLSX.utils.book_append_sheet(wb,s,M[i].substring(0,31))}XLSX.writeFile(wb,"Robotica_Logboek.xlsx");toast("Excel gedownload!")}
@@ -386,7 +430,6 @@ function exportXL(){var wb=XLSX.utils.book_new(),ar=[["Datum","Teamlid","Categor
 /* === START === */
 initForm();
 dbLoad(function(){
-  // Check of gebruiker al eerder een naam had gekozen
   var saved=localStorage.getItem("rb-user");
   if(saved&&M.indexOf(saved)!==-1){
     selectUser(saved);
